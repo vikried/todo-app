@@ -19,6 +19,6 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "todo_list_id")
-    private TodoList todoList;
+    private TodoList todoList; 
 
 }

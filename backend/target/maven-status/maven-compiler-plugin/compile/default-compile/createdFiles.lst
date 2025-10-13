@@ -1,6 +1,0 @@
-de\vriediger\todoapp\controller\TaskController.class
-de\vriediger\todoapp\TodoAppApplication.class
-de\vriediger\todoapp\config\OpenApiConfig.class
-de\vriediger\todoapp\service\TaskService.class
-de\vriediger\todoapp\model\Task.class
-de\vriediger\todoapp\repository\TaskRepository.class
