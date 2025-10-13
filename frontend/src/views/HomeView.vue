@@ -1,0 +1,38 @@
+<template>
+  <div>
+    <TodoForm @add-todo="addTodo" />
+    <TodoList :todos="todos" @delete-todo="deleteTodo" @toggle-todo="toggleTodo" />
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import TodoForm from '@/components/TodoForm.vue'
+import TodoList from '@/components/TodoList.vue'
+import { useTodoStore } from '@/store/todoStore'
+
+const todoStore = useTodoStore()
+
+const todos = ref([])
+
+onMounted(() => {
+  todoStore.fetchTodos().then(() => {
+    todos.value = todoStore.todos
+  })
+})
+
+const addTodo = async (title) => {
+  await todoStore.addTodo(title)
+  todos.value = todoStore.todos
+}
+
+const deleteTodo = async (id) => {
+  await todoStore.deleteTodo(id)
+  todos.value = todoStore.todos
+}
+
+const toggleTodo = async (id) => {
+  await todoStore.toggleTodo(id)
+  todos.value = todoStore.todos
+}
+</script>
