@@ -19,19 +19,7 @@ export const useTodoStore = defineStore('todo', {
       this.todos = this.todos.filter(t => t.id !== id)
     },
     async toggleTodo(id) {
-      // const todo = this.todos.value.find(t => t.id === id)
-      // if (!todo) return
-
-      // const updatedTodo = {...todo, done: !todo.done}
-
-      // try {
-        const response = await axios.put(`http://localhost:8080/api/tasks/${id}/toggle`)
-
-      //  todo.done = response.data.done
-      //} catch (error) {
-      //  console.error("Fehler beim Toggle: ", error)
-      //}
-      
+      const response = await axios.put(`http://localhost:8080/api/tasks/${id}/toggle`)
     }
   }
 })
