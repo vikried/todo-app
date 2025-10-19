@@ -1,0 +1,22 @@
+package de.vriediger.todoapp.mapper;
+
+import de.vriediger.todoapp.dto.TodoListDto;
+import de.vriediger.todoapp.model.TodoList;
+import org.mapstruct.*;
+
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        unmappedTargetPolicy = ReportingPolicy.IGNORE
+)
+public interface TodoListMapper {
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "template", target = "template")
+    @Mapping(source = "todos", target = "todos")
+    TodoListDto toDto(TodoList todoList);
+
+    @InheritInverseConfiguration
+    TodoList toEntity(TodoListDto todoListDto);
+
+}

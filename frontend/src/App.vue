@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <Navbar />
-    <h1>Meine TODO-App 📝</h1>
     <router-view />
   </div>
 </template>
