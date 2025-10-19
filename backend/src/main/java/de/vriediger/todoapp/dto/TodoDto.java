@@ -12,7 +12,9 @@ public class TodoDto implements Comparable<TodoDto> {
     private String title;
     private boolean done;
 
-    private TodoListDto todoList;
+    private Long todoListId;
+
+    private Long categoryId;
 
     @Override
     public int compareTo(TodoDto other) {

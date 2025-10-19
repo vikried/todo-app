@@ -13,9 +13,14 @@ public interface TodoMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "done", target = "done")
-    @Mapping(source = "todoList", target = "todoList")
+    @Mapping(source = "todoList.id", target = "todoListId")
+    @Mapping(source ="category.id", target = "categoryId")
     TodoDto toDTO(Todo todo);
 
-    @InheritInverseConfiguration
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "done", target = "done")
+    @Mapping(target = "todoList", ignore = true)
+    @Mapping(target = "category", ignore = true)
     Todo toEntity(TodoDto todoDto);
 }

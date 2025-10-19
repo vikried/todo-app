@@ -53,9 +53,8 @@ public class TodoListService {
         return todoListMapper.toDto(todoListRepository.save(newList));
     }
 
-    public TodoListDto createTemplate(TodoListDto todoListDto) {
+    public TodoListDto createList(TodoListDto todoListDto) {
         TodoList todoList = todoListMapper.toEntity(todoListDto);
-        todoList.setTemplate(true);
         return todoListMapper.toDto(todoListRepository.save(todoList));
     }
 }

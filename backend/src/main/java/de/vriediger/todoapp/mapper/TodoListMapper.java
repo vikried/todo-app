@@ -6,7 +6,8 @@ import org.mapstruct.*;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.IGNORE
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = {TodoMapper.class, CategoryMapper.class}
 )
 public interface TodoListMapper {
 
@@ -14,6 +15,7 @@ public interface TodoListMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "template", target = "template")
     @Mapping(source = "todos", target = "todos")
+    @Mapping(source = "categories", target = "categories")
     TodoListDto toDto(TodoList todoList);
 
     @InheritInverseConfiguration

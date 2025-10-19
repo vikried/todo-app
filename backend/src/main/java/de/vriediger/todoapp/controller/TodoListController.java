@@ -3,14 +3,12 @@ package de.vriediger.todoapp.controller;
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.service.TodoListService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/lists")
@@ -19,6 +17,21 @@ import lombok.RequiredArgsConstructor;
 public class TodoListController {
 
     private final TodoListService todoListService;
+
+    @GetMapping
+    public List<TodoListDto> getAllTodoLists() {
+        return todoListService.getAllLists();
+    }
+
+    @GetMapping("/templates")
+    public List<TodoListDto> getAllTemplates() {
+        return todoListService.getAllTemplates();
+    }
+
+    @PostMapping
+    public TodoListDto createTodoList(TodoListDto todoList) {
+        return todoListService.createList(todoList);
+    }
 
     @PostMapping("/from-template/{templateId}")
     public ResponseEntity<TodoListDto> createListFromTemplate(

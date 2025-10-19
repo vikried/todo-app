@@ -23,4 +23,8 @@ public class Todo {
     @JoinColumn(name = "todo_list_id")
     private TodoList todoList;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 }
