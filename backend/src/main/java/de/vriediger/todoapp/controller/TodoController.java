@@ -26,9 +26,9 @@ public class TodoController {
         return service.createTodo(todo);
     }
 
-    @PutMapping("/{id}/toggle")
-    public TodoDto toggleDone(@PathVariable Long id) {
-        return service.toggleDone(id);
+    @PatchMapping("/{id}")
+    public TodoDto updateTodo(@PathVariable Long id, @RequestBody TodoDto todo) {
+        return service.updateTodo(id, todo);
     }
 
     @DeleteMapping("/{id}")

@@ -2,8 +2,10 @@ package de.vriediger.todoapp.service;
 
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.mapper.TodoListMapper;
+import de.vriediger.todoapp.model.Category;
 import de.vriediger.todoapp.model.Todo;
 import de.vriediger.todoapp.model.TodoList;
+import de.vriediger.todoapp.repository.CategoryRepository;
 import de.vriediger.todoapp.repository.TodoListRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class TodoListService {
 
     private final TodoListRepository todoListRepository;
     private final TodoListMapper todoListMapper;
+    private final CategoryRepository categoryRepository;
 
     public List<TodoListDto> getAllLists() {
         return todoListRepository.findByTemplate(false)
@@ -55,6 +58,17 @@ public class TodoListService {
 
     public TodoListDto createList(TodoListDto todoListDto) {
         TodoList todoList = todoListMapper.toEntity(todoListDto);
+        return todoListMapper.toDto(todoListRepository.save(todoList));
+    }
+
+    public TodoListDto addCategoryToTodoList(Long todoListId, Long categoryId) {
+        TodoList todoList = todoListRepository.findById(todoListId)
+            .orElseThrow(() -> new RuntimeException("TodoList not found"));
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new RuntimeException("Category not found"));
+        category.getTodos().forEach(todo -> todo.setTodoList(todoList));
+        todoList.getCategories().add(category);
+        category.setTodoList(todoList);
         return todoListMapper.toDto(todoListRepository.save(todoList));
     }
 }

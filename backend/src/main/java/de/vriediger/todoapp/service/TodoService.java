@@ -4,11 +4,17 @@ import java.util.List;
 
 import de.vriediger.todoapp.dto.TodoDto;
 import de.vriediger.todoapp.mapper.TodoMapper;
+import de.vriediger.todoapp.model.Category;
+import de.vriediger.todoapp.model.TodoList;
+import de.vriediger.todoapp.repository.CategoryRepository;
+import de.vriediger.todoapp.repository.TodoListRepository;
 import org.springframework.stereotype.Service;
 
 import de.vriediger.todoapp.model.Todo;
 import de.vriediger.todoapp.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;
+
+import static java.util.Objects.isNull;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +22,8 @@ public class TodoService {
 
     private final TodoRepository repo;
     private final TodoMapper todoMapper;
+    private final CategoryRepository categoryRepository;
+    private final TodoListRepository todoListRepository;
 
     public List<TodoDto> getAllTodos() {
         return repo.findAll().stream()
@@ -32,10 +40,23 @@ public class TodoService {
         return todoMapper.toDTO(saved);
     }
 
-    public TodoDto toggleDone(Long id) {
+    public TodoDto updateTodo(Long id, TodoDto todoDto) {
         Todo todo = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        todo.setDone(!todo.isDone());
+        todo.setDone(todoDto.isDone());
+        if (!isNull(todoDto.getCategoryId())) {
+            Category category = categoryRepository.findById(todoDto.getCategoryId()).orElse(null);
+            todo.setCategory(category);
+        }
+        if (!isNull(todoDto.getTodoListId())) {
+            TodoList todoList = todoListRepository.findById(todoDto.getTodoListId()).orElse(null);
+            todo.setTodoList(todoList);
+        }
+        if (!isNull(todoDto.getTitle())) {
+            todo.setTitle(todoDto.getTitle());
+        }
+
+
         Todo updated = repo.save(todo);
         return todoMapper.toDTO(updated);
     }

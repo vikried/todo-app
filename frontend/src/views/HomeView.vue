@@ -32,8 +32,8 @@ const deleteTodo = async (id) => {
   todos.value = todoStore.todos
 }
 
-const toggleTodo = async (id) => {
-  await todoStore.toggleTodo(id)
+const toggleTodo = async (todo) => {
+  await todoStore.toggleTodo(todo)
   todos.value = todoStore.todos
 }
 </script>

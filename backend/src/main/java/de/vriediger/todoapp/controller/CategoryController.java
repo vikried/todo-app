@@ -15,6 +15,11 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping
+    public List<CategoryDto> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
+
     @GetMapping("/list/{listId}")
     public List<CategoryDto> getByList(@PathVariable Long listId) {
         return categoryService.getCategoriesByList(listId);
@@ -28,5 +33,10 @@ public class CategoryController {
     @DeleteMapping("/{id}")
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
+    }
+
+    @PutMapping("/{id}/todos")
+    public void addTodoToCategory(@PathVariable Long id, @RequestBody Long todoId) {
+        categoryService.addTodoToCategory(id, todoId);
     }
 }

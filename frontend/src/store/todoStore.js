@@ -18,8 +18,8 @@ export const useTodoStore = defineStore('todo', {
       await axios.delete(`http://localhost:8080/api/todos/${id}`)
       this.todos = this.todos.filter(t => t.id !== id)
     },
-    async toggleTodo(id) {
-      const response = await axios.put(`http://localhost:8080/api/todos/${id}/toggle`)
+    async toggleTodo(todo) {
+      const response = await axios.patch(`http://localhost:8080/api/todos/${todo.id}`, { ...todo, done: !todo.done })
     }
   }
 })

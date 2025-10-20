@@ -29,15 +29,21 @@ public class TodoListController {
     }
 
     @PostMapping
-    public TodoListDto createTodoList(TodoListDto todoList) {
+    public TodoListDto createTodoList(@RequestBody TodoListDto todoList) {
         return todoListService.createList(todoList);
     }
 
     @PostMapping("/from-template/{templateId}")
     public ResponseEntity<TodoListDto> createListFromTemplate(
-            @PathVariable Long templateId,
-            @RequestBody String newListName) {
+            @PathVariable Long templateId, @RequestBody String newListName) {
         TodoListDto listFromTemplate = todoListService.createListFromTemplate(templateId, newListName);
+        return ResponseEntity.ok(listFromTemplate);
+    }
+
+    @PutMapping("/{id}/categories")
+    public ResponseEntity<TodoListDto> addCategoryToTodoList(
+            @PathVariable Long id, @RequestBody Long categoryId) {
+        TodoListDto listFromTemplate = todoListService.addCategoryToTodoList(id, categoryId);
         return ResponseEntity.ok(listFromTemplate);
     }
 }
