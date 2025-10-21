@@ -15,5 +15,6 @@ public class CategoryDto {
 
     private String name;
 
+    @Builder.Default
     private List<TodoDto> todos = new ArrayList<>();
 }

@@ -35,29 +35,28 @@ public class TodoService {
     }
 
     public TodoDto createTodo(TodoDto todoDto) {
-        Todo todo = todoMapper.toEntity(todoDto);
-        Todo saved = repo.save(todo);
+        var todo = todoMapper.toEntity(todoDto);
+        var saved = repo.save(todo);
         return todoMapper.toDTO(saved);
     }
 
     public TodoDto updateTodo(Long id, TodoDto todoDto) {
-        Todo todo = repo.findById(id)
+        var todo = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
-        todo.setDone(todoDto.isDone());
+        todo.setDone(todoDto.getDone());
         if (!isNull(todoDto.getCategoryId())) {
-            Category category = categoryRepository.findById(todoDto.getCategoryId()).orElse(null);
+            var category = categoryRepository.findById(todoDto.getCategoryId()).orElse(null);
             todo.setCategory(category);
         }
         if (!isNull(todoDto.getTodoListId())) {
-            TodoList todoList = todoListRepository.findById(todoDto.getTodoListId()).orElse(null);
+            var todoList = todoListRepository.findById(todoDto.getTodoListId()).orElse(null);
             todo.setTodoList(todoList);
         }
         if (!isNull(todoDto.getTitle())) {
             todo.setTitle(todoDto.getTitle());
         }
 
-
-        Todo updated = repo.save(todo);
+        var updated = repo.save(todo);
         return todoMapper.toDTO(updated);
     }
 

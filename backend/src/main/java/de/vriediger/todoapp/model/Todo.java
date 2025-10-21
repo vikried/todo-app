@@ -17,7 +17,7 @@ public class Todo {
     private Long id;
 
     private String title;
-    private boolean done;
+    private Boolean done;
 
     @ManyToOne
     @JoinColumn(name = "todo_list_id")

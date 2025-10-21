@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -38,10 +40,10 @@ public class CategoryService {
     }
 
     public void addTodoToCategory(Long categoryId, Long todoId) {
-        Category category = categoryRepository
+        var category = categoryRepository
                 .findById(categoryId)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        Todo todo = todoRepository
+        var todo = todoRepository
                 .findById(todoId)
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
         category.getTodos().add(todo);
@@ -51,5 +53,16 @@ public class CategoryService {
 
     public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
+        var category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+        if (!isNull(categoryDto.getName())) {
+            category.setName(categoryDto.getName());
+        }
+
+        var updated = categoryRepository.save(category);
+        return categoryMapper.toDto(updated);
     }
 }

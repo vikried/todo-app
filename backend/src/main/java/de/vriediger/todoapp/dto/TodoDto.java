@@ -1,16 +1,19 @@
 package de.vriediger.todoapp.dto;
 
-import de.vriediger.todoapp.model.TodoList;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class TodoDto implements Comparable<TodoDto> {
     private Long id;
 
     private String title;
-    private boolean done;
+    private Boolean done;
 
     private Long todoListId;
 
