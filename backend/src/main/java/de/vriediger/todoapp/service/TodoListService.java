@@ -26,6 +26,10 @@ public class TodoListService {
         .toList();
     }
 
+    public TodoListDto getListById(Long id) {
+        return todoListMapper.toDto(todoListRepository.findById(id).orElseThrow(() -> new RuntimeException("List not found")));
+    }
+
     public List<TodoListDto> getAllTemplates() {
         return todoListRepository.findByTemplate(true)
         .stream()

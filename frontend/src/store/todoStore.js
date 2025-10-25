@@ -11,15 +11,15 @@ export const useTodoStore = defineStore('todo', {
       this.todos = response.data
     },
     async addTodo(title) {
-      const response = await axios.post('http://localhost:8080/api/todos', { title })
+      const response = await axios.post('http://localhost:8080/api/todos', { title: title })
       this.todos.push(response.data)
     },
     async deleteTodo(id) {
       await axios.delete(`http://localhost:8080/api/todos/${id}`)
       this.todos = this.todos.filter(t => t.id !== id)
     },
-    async toggleTodo(todo) {
-      const response = await axios.patch(`http://localhost:8080/api/todos/${todo.id}`, { ...todo, done: !todo.done })
+    async updateTodo(todo, data) {
+      const response = await axios.patch(`http://localhost:8080/api/todos/${todo.id}`, data)
     }
   }
 })

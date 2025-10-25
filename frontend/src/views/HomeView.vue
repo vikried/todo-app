@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="text-2xl font-semibold mb-4">Meine Aufgaben</h2>
+    <h2 class="text-2xl font-bold mb-4">Meine Aufgaben</h2>
     <TodoForm @add-todo="addTodo" />
     <TodoList :todos="todos" @delete-todo="deleteTodo" @toggle-todo="toggleTodo" />
   </div>
@@ -33,7 +33,7 @@ const deleteTodo = async (id) => {
 }
 
 const toggleTodo = async (todo) => {
-  await todoStore.toggleTodo(todo)
+  await todoStore.updateTodo(todo, { ...todo, done: !todo.done })
   todos.value = todoStore.todos
 }
 </script>

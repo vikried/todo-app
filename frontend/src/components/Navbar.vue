@@ -15,6 +15,7 @@
 <script setup>
 const links = [
   { name: 'Home', path: '/' },
+  { name: 'Todo-Listen', path: '/lists'},
   { name: 'Templates', path: '/templates' },
   { name: 'Settings', path: '/settings' }
 ]

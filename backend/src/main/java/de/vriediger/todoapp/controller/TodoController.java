@@ -45,7 +45,7 @@ public class TodoController {
 
     @Operation(
         summary = "Todo erstellen",
-        description = "Erstellt ein neues Todo und gibt sie zurück."
+        description = "Erstellt ein neues Todo und gibt es zurück."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Todo erfolgreich erstellt",
@@ -80,7 +80,7 @@ public class TodoController {
 
     @Operation(
         summary = "Todo löschen",
-        description = "Löscht ein Todo anhand ihres IDs."
+        description = "Löscht ein Todo anhand seiner ID."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "204", description = "Todo erfolgreich gelöscht")

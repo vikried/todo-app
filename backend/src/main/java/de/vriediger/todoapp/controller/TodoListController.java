@@ -1,5 +1,6 @@
 package de.vriediger.todoapp.controller;
 
+import de.vriediger.todoapp.dto.CategoryDto;
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.service.TodoListService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,6 +42,21 @@ public class TodoListController {
     @GetMapping
     public ResponseEntity<List<TodoListDto>> getAllTodoLists() {
         return ResponseEntity.ok(todoListService.getAllLists());
+    }
+
+    @Operation(
+            summary = "Todo-Liste anhand der ID finden",
+            description = "Gibt eine Liste anhand ihrer Id zurück."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Todo-Liste gefunden",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TodoListDto.class))),
+            @ApiResponse(responseCode = "404", description = "Todo-Liste nicht gefunden", content = @Content)
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<TodoListDto> findTodoList(@PathVariable Long id) {
+        return ResponseEntity.ok(todoListService.getListById(id));
     }
 
     @Operation(summary = "Alle Templates abrufen",
@@ -106,8 +122,8 @@ public class TodoListController {
     })
     @PutMapping("/{id}/categories")
     public ResponseEntity<TodoListDto> addCategoryToTodoList(
-            @PathVariable Long id, @RequestBody Long categoryId) {
-        TodoListDto listFromTemplate = todoListService.addCategoryToTodoList(id, categoryId);
+            @PathVariable Long id, @RequestBody CategoryDto category) {
+        TodoListDto listFromTemplate = todoListService.addCategoryToTodoList(id, category.getId());
         return ResponseEntity.ok(listFromTemplate);
     }
 
