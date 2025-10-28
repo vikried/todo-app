@@ -10,9 +10,10 @@ export const useTodoStore = defineStore('todo', {
       const response = await axios.get('http://localhost:8080/api/todos')
       this.todos = response.data
     },
-    async addTodo(title) {
-      const response = await axios.post('http://localhost:8080/api/todos', { title: title })
+    async addTodo(data) {
+      const response = await axios.post('http://localhost:8080/api/todos', data)
       this.todos.push(response.data)
+      return response.data
     },
     async deleteTodo(id) {
       await axios.delete(`http://localhost:8080/api/todos/${id}`)
@@ -20,6 +21,10 @@ export const useTodoStore = defineStore('todo', {
     },
     async updateTodo(todo, data) {
       const response = await axios.patch(`http://localhost:8080/api/todos/${todo.id}`, data)
+    },
+    async findTodoById(todoId) {
+      const response = await axios.get(`http://localhost:8080/api/todos/${todoId}`)
+      return response.data
     }
   }
 })

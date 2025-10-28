@@ -23,7 +23,7 @@ onMounted(() => {
 })
 
 const addTodo = async (title) => {
-  await todoStore.addTodo(title)
+  await todoStore.addTodo({title: title})
   todos.value = todoStore.todos
 }
 

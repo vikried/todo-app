@@ -19,6 +19,13 @@ export const useCategoryStore = defineStore('category', {
           const response = await axios.post('http://localhost:8080/api/categories', { name: name })
           this.categories.push(response.data)
           return response.data
+      },
+      async deleteCategory(categoryId) {
+          await axios.delete(`http://localhost:8080/api/categories/${categoryId}`)
+          this.categories = this.categories.filter(c => c.id !== categoryId)
+      },
+      async addTodoToCategory(categoryId, todoId) {
+          await axios.put(`http://localhost:8080/api/categories/${categoryId}/todos`, {id: todoId})
       }
   }
 })

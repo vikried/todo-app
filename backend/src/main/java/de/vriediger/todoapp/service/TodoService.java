@@ -34,6 +34,12 @@ public class TodoService {
                 .toList();
     }
 
+    public TodoDto findTodoById(Long id) {
+        return repo.findById(id)
+                .map(todoMapper::toDTO)
+                .orElseThrow(() -> new RuntimeException("Todo not found"));
+    }
+
     public TodoDto createTodo(TodoDto todoDto) {
         var todo = todoMapper.toEntity(todoDto);
         var saved = repo.save(todo);

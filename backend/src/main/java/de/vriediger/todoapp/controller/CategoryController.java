@@ -1,6 +1,7 @@
 package de.vriediger.todoapp.controller;
 
 import de.vriediger.todoapp.dto.CategoryDto;
+import de.vriediger.todoapp.dto.TodoDto;
 import de.vriediger.todoapp.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -97,8 +98,8 @@ public class CategoryController {
         @ApiResponse(responseCode = "404", description = "Kategorie oder Todo nicht gefunden", content = @Content)
     })
     @PutMapping("/{id}/todos")
-    public ResponseEntity<Object> addTodoToCategory(@PathVariable Long id, @RequestBody Long todoId) {
-        categoryService.addTodoToCategory(id, todoId);
+    public ResponseEntity<Object> addTodoToCategory(@PathVariable Long id, @RequestBody TodoDto todoDto) {
+        categoryService.addTodoToCategory(id, todoDto.getId());
         return ResponseEntity.noContent().build();
     }
 
