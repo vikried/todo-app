@@ -11,6 +11,10 @@ export const useTodoListStore = defineStore('todoList', {
             const response = await axios.get('http://localhost:8080/api/lists')
             this.todoLists = response.data
         },
+        async fetchTemplates() {
+            const response = await axios.get('http://localhost:8080/api/lists/templates')
+            this.todoLists = response.data
+        },
         async deleteTodoList(id) {
             await axios.delete(`http://localhost:8080/api/lists/${id}`)
             this.todoLists = this.todoLists.filter(l => l.id !== id)

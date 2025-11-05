@@ -3,9 +3,19 @@
     <h1 class="text-2xl font-bold mb-4">Liste: {{ list?.name }}</h1>
     <button
       @click="toggleEditMode"
-      class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+      class="flex items-center gap-2 bg-gray-200 text-black px-3 py-2 rounded hover:bg-gray-300 transition"
     >
-      {{ editMode ? '✅ Speichern' : '✏️ Bearbeiten' }}
+      <SquarePen v-if="!editMode" class="w-5 h-5"/>
+      <Save v-if="editMode" class="w-5 h-5"/>
+      {{ editMode ? 'Speichern' : 'Bearbeiten' }}
+    </button>
+    <button
+      v-if="list?.template"
+      @click="openTemplatePopup(list.id)"
+      class="flex items-center gap-2 bg-gray-200 text-black px-3 py-2 rounded hover:bg-gray-300 transition"
+    >
+      <FilePlus class="w-5 h-5" />
+      Liste erstellen
     </button>
     <br/>
     <br/>
@@ -20,9 +30,42 @@
       </div>
 
       <div v-for="category in categories" :key="category.id" class="mb-6 border rounded p-3">
-        <CategoryForm :category="category" :editMode="editMode" @delete-category="deleteCategory" @delete-todo="deleteTodo" @toggle-todo="toggleTodoStatus" @create-todo="createTodoAndAddToCategory"/>
+        <CategoryForm :category="category" :editMode="editMode" :is-template="list?.template" @delete-category="deleteCategory" @delete-todo="deleteTodo" @toggle-todo="toggleTodoStatus" @create-todo="createTodoAndAddToCategory"/>
       </div>
     </section>
+  </div>
+
+  <!-- Popup -->
+  <div
+    v-if="showCreateListFromTemplatePopup"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96">
+      <h2 class="text-lg font-semibold mb-4">Neue Liste aus Template</h2>
+
+      <label class="block mb-2 text-sm text-gray-600">Name der Liste:</label>
+      <input
+        v-model="newListName"
+        type="text"
+        class="border w-full px-3 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300"
+        placeholder="z.B. WW Reise 2026"
+      />
+
+      <div class="flex justify-end gap-3 mt-4">
+        <button
+          @click="showCreateListFromTemplatePopup = false"
+          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          Abbrechen
+        </button>
+        <button
+          @click="createListFromTemplate"
+          class="px-3 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Erstellen
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -33,6 +76,7 @@ import { useTodoListStore } from '@/store/todoListStore';
 import { useCategoryStore } from '@/store/categoryStore'
 import {useTodoStore} from "@/store/todoStore.js";
 import CategoryForm from "@/components/CategoryForm.vue";
+import { FilePlus, SquarePen, Save } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
@@ -45,8 +89,11 @@ const list = ref(null);
 const categories = ref(null);
 const newCategoryName = ref('');
 
-
 const editMode = ref(false);
+
+const showCreateListFromTemplatePopup = ref(false);
+const newListName = ref('');
+const selectedTemplateId = ref('');
 
 const loadList = async() => {
   list.value = await todoListStore.findListById(listId);
@@ -87,8 +134,22 @@ const deleteTodo = async(todo) => {
   loadCategories();
 }
 
+const createListFromTemplate = async() => {
+  if (!newListName.value) return
+  console.log("New List Name: " + newListName.value);
+  console.log("Selected Template: " + selectedTemplateId.value);
+  newListName.value = '';
+  showCreateListFromTemplatePopup.value = false;
+}
+
 const toggleEditMode = () => {
   editMode.value = !editMode.value;
+}
+
+// Logik: Popup öffnen
+function openTemplatePopup(templateId) {
+  selectedTemplateId.value = templateId;
+  showCreateListFromTemplatePopup.value = true;
 }
 
 onMounted(() => {

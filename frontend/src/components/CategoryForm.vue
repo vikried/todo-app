@@ -22,14 +22,14 @@
         <th class="w-1/3 px-4 py-2 text-left">
           Todo
         </th>
-        <th class="w-1/3 px-4 py-2 text-left">Status</th>
+        <th class="w-1/3 px-4 py-2 text-left" v-if="!isTemplate">Status</th>
         <th class="w-1/3 px-4 py-2 text-left" v-if="editMode">Aktionen</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="todo in sortTodos(category.todos)" :key="todo.id" class="border-t">
         <td class="p-2 truncate max-w-[200px]" :title="todo.title">{{ todo.title }}</td>
-        <td class="p-2" @click="$emit('toggle-todo', todo)">{{ todo.done ? '✅' : '❌' }}</td>
+        <td class="p-2" @click="$emit('toggle-todo', todo)" v-if="!isTemplate">{{ todo.done ? '✅' : '❌' }}</td>
         <td class="p-2" v-if="editMode">
           <button @click.stop="$emit('delete-todo', todo)"
                   class="text-red-600 hover:text-red-800"
@@ -49,7 +49,8 @@ import { ref, defineEmits } from 'vue'
 
 defineProps({
   category: {},
-  editMode: false
+  editMode: false,
+  isTemplate: false
 });
 
 const emit = defineEmits([
