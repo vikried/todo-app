@@ -1,22 +1,24 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4">Liste: {{ list?.name }}</h1>
-    <button
-      @click="toggleEditMode"
-      class="flex items-center gap-2 bg-gray-200 text-black px-3 py-2 rounded hover:bg-gray-300 transition"
-    >
-      <SquarePen v-if="!editMode" class="w-5 h-5"/>
-      <Save v-if="editMode" class="w-5 h-5"/>
-      {{ editMode ? 'Speichern' : 'Bearbeiten' }}
-    </button>
-    <button
-      v-if="list?.template"
-      @click="openTemplatePopup(list.id)"
-      class="flex items-center gap-2 bg-gray-200 text-black px-3 py-2 rounded hover:bg-gray-300 transition"
-    >
-      <FilePlus class="w-5 h-5" />
-      Liste erstellen
-    </button>
+    <div class="flex items-center gap-2">
+      <button
+        @click="toggleEditMode"
+        class="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-800 transition"
+      >
+        <SquarePen v-if="!editMode" class="w-5 h-5"/>
+        <Save v-if="editMode" class="w-5 h-5"/>
+        {{ editMode ? 'Speichern' : 'Bearbeiten' }}
+      </button><nobr/>
+      <button
+        v-if="list?.template"
+        @click="openTemplatePopup(list.id)"
+        class="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-800 transition"
+      >
+        <FilePlus class="w-5 h-5" />
+        Liste erstellen
+      </button>
+    </div>
     <br/>
     <br/>
 
@@ -25,7 +27,7 @@
         <h2 class="text-xl font-semibold mb-2">Kategorien</h2>
         <form @submit.prevent="createCategoryAndAddToList(list.id)" class="flex gap-2 mb-4">
           <input v-model="newCategoryName" placeholder="Neue Kategorie" class="border rounded p-2 flex-1"/>
-          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Hinzufügen</button>
+          <button type="submit" class="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded">Hinzufügen</button>
         </form>
       </div>
 
@@ -60,7 +62,7 @@
         </button>
         <button
           @click="createListFromTemplate"
-          class="px-3 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+          class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
         >
           Erstellen
         </button>
@@ -136,8 +138,7 @@ const deleteTodo = async(todo) => {
 
 const createListFromTemplate = async() => {
   if (!newListName.value) return
-  console.log("New List Name: " + newListName.value);
-  console.log("Selected Template: " + selectedTemplateId.value);
+  await todoListStore.createListFormTemplate(selectedTemplateId.value, newListName.value);
   newListName.value = '';
   showCreateListFromTemplatePopup.value = false;
 }

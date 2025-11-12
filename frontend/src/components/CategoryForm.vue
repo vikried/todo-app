@@ -12,7 +12,7 @@
   <div v-if="editMode">
     <form @submit.prevent="onSubmitCreateTodo(category.id)" class="flex gap-2 mb-4">
       <input v-model="newTodoName" placeholder="Neues Todo" class="border rounded p-2 flex-1"/>
-      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Hinzufügen</button>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded">Hinzufügen</button>
     </form>
   </div>
 

@@ -2,12 +2,15 @@ package de.vriediger.todoapp.service;
 
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.mapper.TodoListMapper;
+import de.vriediger.todoapp.model.Category;
 import de.vriediger.todoapp.model.Todo;
 import de.vriediger.todoapp.model.TodoList;
 import de.vriediger.todoapp.repository.CategoryRepository;
 import de.vriediger.todoapp.repository.TodoListRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,9 +24,9 @@ public class TodoListService {
 
     public List<TodoListDto> getAllLists() {
         return todoListRepository.findByTemplate(false)
-        .stream()
-        .map(todoListMapper::toDto)
-        .toList();
+                .stream()
+                .map(todoListMapper::toDto)
+                .toList();
     }
 
     public TodoListDto getListById(Long id) {
@@ -32,29 +35,50 @@ public class TodoListService {
 
     public List<TodoListDto> getAllTemplates() {
         return todoListRepository.findByTemplate(true)
-        .stream()
-        .map(todoListMapper::toDto)
-        .toList();
+                .stream()
+                .map(todoListMapper::toDto)
+                .toList();
     }
 
-    public TodoListDto createListFromTemplate(Long templateId, String newListName) {
-        var template = todoListRepository.findById(templateId)
-                .orElseThrow(() -> new RuntimeException("Template not found"));
+    @Transactional
+    public TodoListDto createListFromTemplate(Long templateId, String name) {
+        TodoList template = todoListRepository.findById(templateId)
+                .orElseThrow(() -> new EntityNotFoundException("Template nicht gefunden"));
 
-        var newList = TodoList.builder()
-                .name(newListName)
-                .template(false)
-                .build();
+        // Neue Liste erstellen
+        TodoList newList = new TodoList();
+        newList.setName(name);
+        newList.setTemplate(false);
 
-        var copiedTodos = template.getTodos().stream()
-                .map(t -> Todo.builder()
-                        .title(t.getTitle())
-                        .done(false)
-                        .todoList(newList)
-                        .build())
-                .toList();
+        // Kategorien klonen
+        for (Category templateCategory : template.getCategories()) {
+            Category newCategory = new Category();
+            newCategory.setName(templateCategory.getName());
+            newCategory.setTodoList(newList);
 
-        newList.setTodos(copiedTodos);
+            // Todos klonen
+            for (Todo templateTodo : templateCategory.getTodos()) {
+                Todo newTodo = new Todo();
+                newTodo.setTitle(templateTodo.getTitle());
+                newTodo.setDone(false);
+                newTodo.setCategory(newCategory);
+                newTodo.setTodoList(newList);
+                newCategory.getTodos().add(newTodo);
+            }
+
+            newList.getCategories().add(newCategory);
+        }
+
+        // Todos ohne Kategorie (falls vorhanden)
+        for (Todo templateTodo : template.getTodos()) {
+            if (templateTodo.getCategory() == null) {
+                Todo newTodo = new Todo();
+                newTodo.setTitle(templateTodo.getTitle());
+                newTodo.setDone(false);
+                newTodo.setTodoList(newList);
+                newList.getTodos().add(newTodo);
+            }
+        }
 
         return todoListMapper.toDto(todoListRepository.save(newList));
     }
@@ -66,9 +90,9 @@ public class TodoListService {
 
     public TodoListDto addCategoryToTodoList(Long todoListId, Long categoryId) {
         var todoList = todoListRepository.findById(todoListId)
-            .orElseThrow(() -> new RuntimeException("TodoList not found"));
+                .orElseThrow(() -> new RuntimeException("TodoList not found"));
         var category = categoryRepository.findById(categoryId)
-            .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new RuntimeException("Category not found"));
         category.getTodos().forEach(todo -> todo.setTodoList(todoList));
         todoList.getCategories().add(category);
         category.setTodoList(todoList);
