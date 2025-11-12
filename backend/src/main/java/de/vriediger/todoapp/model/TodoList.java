@@ -27,6 +27,6 @@ public class TodoList {
     private List<Todo> todos = new ArrayList<>();
 
     @OneToMany(mappedBy = "todoList", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Category> categories;
+    private List<Category> categories = new ArrayList<>();
 
 }

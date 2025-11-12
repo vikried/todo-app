@@ -4,7 +4,7 @@
 
     <form @submit.prevent="createList" class="mb-6 flex gap-2">
       <input v-model="newListName" placeholder="Neue Liste" class="border rounded p-2 flex-1" />
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Erstellen</button>
+      <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded">Erstellen</button>
     </form>
 
     <ul>

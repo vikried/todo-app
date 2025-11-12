@@ -15,6 +15,12 @@ export const useTodoListStore = defineStore('todoList', {
             const response = await axios.get('http://localhost:8080/api/lists/templates')
             this.todoLists = response.data
         },
+        async createListFormTemplate(templateId, newListName) {
+            const response = await axios.post(`http://localhost:8080/api/lists/from-template/${templateId}?newListName=${newListName}`);
+            // eigentlich wird hier ein TodoListDto geliefert... kann man das für Routing benutzen?
+
+            //this.todoLists = response.data
+        },
         async deleteTodoList(id) {
             await axios.delete(`http://localhost:8080/api/lists/${id}`)
             this.todoLists = this.todoLists.filter(l => l.id !== id)

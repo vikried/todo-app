@@ -107,7 +107,7 @@ public class TodoListController {
     })
     @PostMapping("/from-template/{templateId}")
     public ResponseEntity<TodoListDto> createListFromTemplate(
-            @PathVariable Long templateId, @RequestBody String newListName) {
+            @PathVariable Long templateId, @RequestParam("newListName") String newListName) {
         TodoListDto listFromTemplate = todoListService.createListFromTemplate(templateId, newListName);
         return ResponseEntity.ok(listFromTemplate);
     }

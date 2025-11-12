@@ -1,11 +1,11 @@
 <template>
-  <nav class="flex gap-4 border-b pb-2 mb-6">
+  <nav class="flex gap-2 border-b border-gray-300 pb-2 mb-6">
     <RouterLink
       v-for="link in links"
       :key="link.path"
       :to="link.path"
-      class="text-blue-600 hover:underline"
-      active-class="font-bold underline"
+      class="px-4 py-2 rounded-t-lg text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+      active-class="bg-blue-100 text-blue-700 font-semibold border-b-2 border-blue-600"
     >
       {{ link.name }}
     </RouterLink>
