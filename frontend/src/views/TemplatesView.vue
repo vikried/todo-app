@@ -1,14 +1,14 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Templates</h1>
+  <div class="p-6 dark:bg-gray-900 dark:text-gray-100">
+    <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Templates</h1>
 
     <form @submit.prevent="createTemplate" class="mb-6 flex gap-2">
-      <input v-model="newTemplateName" placeholder="Neues Template" class="border rounded p-2 flex-1" />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded">Erstellen</button>
+      <input v-model="newTemplateName" placeholder="Neues Template" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700" />
+      <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded dark:bg-gray-800 dark:border-gray-700">Erstellen</button>
     </form>
 
     <ul>
-      <li v-for="template in templateLists" :key="template.id" class="border p-3 mb-2 rounded hover:bg-gray-50 cursor-pointer"
+      <li v-for="template in templateLists" :key="template.id" class="border p-3 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
           @click="$router.push(`/lists/${template.id}`)">
         {{ template.name }}
         <button

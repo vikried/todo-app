@@ -1,7 +1,7 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Liste: {{ list?.name }}</h1>
-    <div class="flex items-center gap-2">
+    <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Liste: {{ list?.name }}</h1>
+    <div class="flex items-center gap-2 dark:text-gray-100">
       <button
         @click="toggleEditMode"
         class="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-800 transition"
@@ -24,9 +24,9 @@
 
     <section class="mb-6">
       <div v-if="editMode" class="mt-8 border-t pt-4">
-        <h2 class="text-xl font-semibold mb-2">Kategorien</h2>
+        <h2 class="text-xl font-semibold mb-2 dark:text-gray-100">Kategorien</h2>
         <form @submit.prevent="createCategoryAndAddToList(list.id)" class="flex gap-2 mb-4">
-          <input v-model="newCategoryName" placeholder="Neue Kategorie" class="border rounded p-2 flex-1"/>
+          <input v-model="newCategoryName" placeholder="Neue Kategorie" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700"/>
           <button type="submit" class="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded">Hinzufügen</button>
         </form>
       </div>
@@ -42,21 +42,21 @@
     v-if="showCreateListFromTemplatePopup"
     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
   >
-    <div class="bg-white rounded-xl shadow-lg p-6 w-96">
-      <h2 class="text-lg font-semibold mb-4">Neue Liste aus Template</h2>
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96 dark:bg-gray-900 dark:text-gray-100">
+      <h2 class="text-lg font-semibold mb-4 dark:text-gray-100">Neue Liste aus Template</h2>
 
-      <label class="block mb-2 text-sm text-gray-600">Name der Liste:</label>
+      <label class="block mb-2 text-sm text-gray-600 dark:text-gray-100">Name der Liste:</label>
       <input
         v-model="newListName"
         type="text"
-        class="border w-full px-3 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300"
+        class="border w-full px-3 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300 dark:text-gray-100 dark:bg-gray-700"
         placeholder="z.B. WW Reise 2026"
       />
 
       <div class="flex justify-end gap-3 mt-4">
         <button
           @click="showCreateListFromTemplatePopup = false"
-          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300"
+          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-700 hover:dark:bg-gray-500"
         >
           Abbrechen
         </button>

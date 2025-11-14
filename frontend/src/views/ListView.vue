@@ -1,14 +1,14 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Todo-Listen</h1>
+    <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Todo-Listen</h1>
 
     <form @submit.prevent="createList" class="mb-6 flex gap-2">
-      <input v-model="newListName" placeholder="Neue Liste" class="border rounded p-2 flex-1" />
+      <input v-model="newListName" placeholder="Neue Liste" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700" />
       <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded">Erstellen</button>
     </form>
 
     <ul>
-      <li v-for="list in todoLists" :key="list.id" class="border p-3 mb-2 rounded hover:bg-gray-50 cursor-pointer"
+      <li v-for="list in todoLists" :key="list.id" class="border p-3 mb-2 rounded hover:bg-gray-200 cursor-pointer dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-gray-100"
           @click="$router.push(`/lists/${list.id}`)">
         {{ list.name }}
         <button

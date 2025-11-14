@@ -1,5 +1,5 @@
 <template>
-  <h3 class="font-semibold text-lg mb-2">
+  <h3 class="font-semibold text-lg mb-2 dark:text-gray-100">
     {{ category.name }}
     <button v-if="editMode"
             @click.stop="$emit('delete-category', category.id)"
@@ -11,7 +11,7 @@
   </h3>
   <div v-if="editMode">
     <form @submit.prevent="onSubmitCreateTodo(category.id)" class="flex gap-2 mb-4">
-      <input v-model="newTodoName" placeholder="Neues Todo" class="border rounded p-2 flex-1"/>
+      <input v-model="newTodoName" placeholder="Neues Todo" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700"/>
       <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded">Hinzufügen</button>
     </form>
   </div>
@@ -19,18 +19,18 @@
   <table class="w-full border text-sm">
     <thead>
       <tr class="bg-gray-100">
-        <th class="w-1/3 px-4 py-2 text-left">
+        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100 dark:bg-gray-700">
           Todo
         </th>
-        <th class="w-1/3 px-4 py-2 text-left" v-if="!isTemplate">Status</th>
-        <th class="w-1/3 px-4 py-2 text-left" v-if="editMode">Aktionen</th>
+        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100 dark:bg-gray-700" v-if="!isTemplate">Status</th>
+        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100 dark:bg-gray-700" v-if="editMode">Aktionen</th>
       </tr>
     </thead>
     <tbody>
       <tr v-for="todo in sortTodos(category.todos)" :key="todo.id" class="border-t">
-        <td class="p-2 truncate max-w-[200px]" :title="todo.title">{{ todo.title }}</td>
-        <td class="p-2" @click="$emit('toggle-todo', todo)" v-if="!isTemplate">{{ todo.done ? '✅' : '❌' }}</td>
-        <td class="p-2" v-if="editMode">
+        <td class="p-2 truncate max-w-[200px] dark:text-gray-100 dark:bg-gray-700" :title="todo.title">{{ todo.title }}</td>
+        <td class="p-2 dark:text-gray-100 dark:bg-gray-700" @click="$emit('toggle-todo', todo)" v-if="!isTemplate">{{ todo.done ? '✅' : '❌' }}</td>
+        <td class="p-2 dark:text-gray-100 dark:bg-gray-700" v-if="editMode">
           <button @click.stop="$emit('delete-todo', todo)"
                   class="text-red-600 hover:text-red-800"
                   title="Todo löschen"
