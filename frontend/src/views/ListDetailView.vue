@@ -1,43 +1,44 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Liste: {{ list?.name }}</h1>
-    <div class="flex items-center gap-2 dark:text-gray-100">
-      <button
-        @click="toggleEditMode"
-        class="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-800 transition"
-      >
+    <div class="flex items-center gap-2 mb-6 dark:text-gray-100">
+      <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
         <SquarePen v-if="!editMode" class="w-5 h-5"/>
         <Save v-if="editMode" class="w-5 h-5"/>
         {{ editMode ? 'Speichern' : 'Bearbeiten' }}
-      </button><nobr/>
-      <button
+      </BaseButton>
+      <BaseButton
         v-if="list?.template"
+        class="flex items-center gap-2"
         @click="openTemplatePopup(list.id)"
-        class="flex items-center gap-2 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-800 transition"
       >
         <FilePlus class="w-5 h-5" />
         Liste erstellen
-      </button>
+      </BaseButton>
     </div>
-    <br/>
-    <br/>
 
-    <section class="mb-6">
+    <p v-if="loading" class="text-gray-500 dark:text-gray-400">Lade Liste …</p>
+
+    <section v-else class="mb-6">
       <div v-if="editMode" class="mt-8 border-t pt-4">
         <h2 class="text-xl font-semibold mb-2 dark:text-gray-100">Kategorien</h2>
         <form @submit.prevent="createCategoryAndAddToList(list.id)" class="flex gap-2 mb-4">
-          <input v-model="newCategoryName" placeholder="Neue Kategorie" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700"/>
-          <button type="submit" class="bg-blue-600 text-white hover:bg-blue-800 px-4 py-2 rounded">Hinzufügen</button>
+          <input v-model="newCategoryName" placeholder="Neue Kategorie" class="border rounded p-2 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"/>
+          <BaseButton type="submit">Hinzufügen</BaseButton>
         </form>
       </div>
 
+      <p v-if="!categories || categories.length === 0" class="text-gray-500 dark:text-gray-400">
+        Noch keine Kategorien in dieser Liste.
+      </p>
+
       <div v-for="category in categories" :key="category.id" class="mb-6 border rounded p-3">
-        <CategoryForm :category="category" :editMode="editMode" :is-template="list?.template" @delete-category="deleteCategory" @delete-todo="deleteTodo" @toggle-todo="toggleTodoStatus" @create-todo="createTodoAndAddToCategory"/>
+        <CategoryForm :category="category" :editMode="editMode" :is-template="list?.template" @delete-category="askDeleteCategory" @delete-todo="askDeleteTodo" @toggle-todo="toggleTodoStatus" @create-todo="createTodoAndAddToCategory"/>
       </div>
     </section>
   </div>
 
-  <!-- Popup -->
+  <!-- Popup: Liste aus Template -->
   <div
     v-if="showCreateListFromTemplatePopup"
     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
@@ -54,21 +55,31 @@
       />
 
       <div class="flex justify-end gap-3 mt-4">
-        <button
-          @click="showCreateListFromTemplatePopup = false"
-          class="px-3 py-2 rounded bg-gray-200 hover:bg-gray-300 dark:text-gray-100 dark:bg-gray-700 hover:dark:bg-gray-500"
-        >
+        <BaseButton variant="secondary" @click="showCreateListFromTemplatePopup = false">
           Abbrechen
-        </button>
-        <button
-          @click="createListFromTemplate"
-          class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-        >
+        </BaseButton>
+        <BaseButton @click="createListFromTemplate">
           Erstellen
-        </button>
+        </BaseButton>
       </div>
     </div>
   </div>
+
+  <ConfirmDialog
+    v-model="showDeleteCategoryConfirm"
+    title="Kategorie löschen"
+    message="Die Kategorie und alle enthaltenen Todos werden unwiderruflich gelöscht."
+    @confirm="confirmDeleteCategory"
+    @cancel="showDeleteCategoryConfirm = false"
+  />
+
+  <ConfirmDialog
+    v-model="showDeleteTodoConfirm"
+    title="Todo löschen"
+    message="Dieses Todo wird unwiderruflich gelöscht."
+    @confirm="confirmDeleteTodo"
+    @cancel="showDeleteTodoConfirm = false"
+  />
 </template>
 
 <script setup>
@@ -78,6 +89,8 @@ import { useTodoListStore } from '@/store/todoListStore';
 import { useCategoryStore } from '@/store/categoryStore'
 import {useTodoStore} from "@/store/todoStore.js";
 import CategoryForm from "@/components/CategoryForm.vue";
+import BaseButton from '@/components/BaseButton.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { FilePlus, SquarePen, Save } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
@@ -90,12 +103,18 @@ const listId = route.params.id;
 const list = ref(null);
 const categories = ref(null);
 const newCategoryName = ref('');
+const loading = ref(true);
 
 const editMode = ref(false);
 
 const showCreateListFromTemplatePopup = ref(false);
 const newListName = ref('');
 const selectedTemplateId = ref('');
+
+const showDeleteCategoryConfirm = ref(false);
+const pendingCategoryId = ref(null);
+const showDeleteTodoConfirm = ref(false);
+const pendingTodo = ref(null);
 
 const loadList = async() => {
   list.value = await todoListStore.findListById(listId);
@@ -120,19 +139,34 @@ const createTodoAndAddToCategory = async(categoryId, newTodoName) => {
   loadCategories();
 }
 
-const deleteCategory = async(categoryId) => {
-  await categoryStore.deleteCategory(categoryId);
+const askDeleteCategory = (categoryId) => {
+  pendingCategoryId.value = categoryId;
+  showDeleteCategoryConfirm.value = true;
+}
+
+const confirmDeleteCategory = async() => {
+  if (pendingCategoryId.value == null) return;
+  await categoryStore.deleteCategory(pendingCategoryId.value);
+  showDeleteCategoryConfirm.value = false;
+  pendingCategoryId.value = null;
   loadCategories();
 }
 
 const toggleTodoStatus = async(todo) => {
-  //const todo = await todoStore.findTodoById(todoId);
   await todoStore.updateTodo(todo, {...todo, done: !todo.done});
   loadCategories();
 }
 
-const deleteTodo = async(todo) => {
-  await todoStore.deleteTodo(todo.id);
+const askDeleteTodo = (todo) => {
+  pendingTodo.value = todo;
+  showDeleteTodoConfirm.value = true;
+}
+
+const confirmDeleteTodo = async() => {
+  if (!pendingTodo.value) return;
+  await todoStore.deleteTodo(pendingTodo.value.id);
+  showDeleteTodoConfirm.value = false;
+  pendingTodo.value = null;
   loadCategories();
 }
 
@@ -147,14 +181,14 @@ const toggleEditMode = () => {
   editMode.value = !editMode.value;
 }
 
-// Logik: Popup öffnen
 function openTemplatePopup(templateId) {
   selectedTemplateId.value = templateId;
   showCreateListFromTemplatePopup.value = true;
 }
 
-onMounted(() => {
-  loadList();
-  loadCategories();
+onMounted(async () => {
+  loading.value = true;
+  await Promise.all([loadList(), loadCategories()]);
+  loading.value = false;
 })
 </script>

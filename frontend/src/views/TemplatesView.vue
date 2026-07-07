@@ -1,41 +1,63 @@
 <template>
-  <div class="p-6 dark:bg-gray-900 dark:text-gray-100">
+  <div class="p-6">
     <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Templates</h1>
 
     <form @submit.prevent="createTemplate" class="mb-6 flex gap-2">
-      <input v-model="newTemplateName" placeholder="Neues Template" class="border rounded p-2 flex-1 dark:text-gray-100 dark:bg-gray-700" />
-      <button type="submit" class="bg-blue-600 hover:bg-blue-800 text-white px-4 py-2 rounded dark:bg-gray-800 dark:border-gray-700">Erstellen</button>
+      <input v-model="newTemplateName" placeholder="Neues Template" class="border rounded p-2 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700" />
+      <BaseButton type="submit">Erstellen</BaseButton>
     </form>
 
-    <ul>
-      <li v-for="template in templateLists" :key="template.id" class="border p-3 mb-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+    <p v-if="loading" class="text-gray-500 dark:text-gray-400">Lade Templates …</p>
+    <p v-else-if="templateLists.length === 0" class="text-gray-500 dark:text-gray-400">
+      Noch keine Templates. Leg dein erstes Template an!
+    </p>
+
+    <ul v-else>
+      <li v-for="template in templateLists" :key="template.id"
+          class="border p-3 mb-2 rounded flex items-center justify-between hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-900 dark:text-gray-100 cursor-pointer"
           @click="$router.push(`/lists/${template.id}`)">
-        {{ template.name }}
-        <button
-          @click.stop="deleteTemplate(template.id)"
-          class="text-red-600 hover:text-red-800"
-          title="Liste löschen"
-        >
-          🗑️
-        </button>
+        <span>{{ template.name }}</span>
+        <IconButton title="Template löschen" @click.stop="askDelete(template)">
+          <Trash2 class="w-4 h-4" />
+        </IconButton>
       </li>
     </ul>
+
+    <ConfirmDialog
+      v-model="showConfirm"
+      title="Template löschen"
+      :message="`Soll das Template „${pendingTemplate?.name}“ wirklich gelöscht werden?`"
+      @confirm="confirmDelete"
+      @cancel="showConfirm = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useTodoListStore } from '@/store/todoListStore';
+import BaseButton from '@/components/BaseButton.vue'
+import IconButton from '@/components/IconButton.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import { Trash2 } from 'lucide-vue-next'
 
 const todoListStore = useTodoListStore()
 
 const templateLists = ref([])
 const newTemplateName = ref('')
+const loading = ref(true)
+
+const showConfirm = ref(false)
+const pendingTemplate = ref(null)
 
 const loadTemplates = async () => {
-  todoListStore.fetchTemplates().then(() => {
+  loading.value = true
+  try {
+    await todoListStore.fetchTemplates()
     templateLists.value = todoListStore.todoLists
-  })
+  } finally {
+    loading.value = false
+  }
 }
 
 const createTemplate = async () => {
@@ -45,8 +67,16 @@ const createTemplate = async () => {
   loadTemplates()
 }
 
-const deleteTemplate = async (id) => {
-  await todoListStore.deleteTodoList(id)
+const askDelete = (template) => {
+  pendingTemplate.value = template
+  showConfirm.value = true
+}
+
+const confirmDelete = async () => {
+  if (!pendingTemplate.value) return
+  await todoListStore.deleteTodoList(pendingTemplate.value.id)
+  showConfirm.value = false
+  pendingTemplate.value = null
   loadTemplates()
 }
 
