@@ -1,12 +1,15 @@
 <template>
   <div class="app-container dark:bg-gray-800 dark:border-gray-700">
-    <Navbar />
+    <Navbar v-if="route.path !== '/login'" />
     <router-view />
   </div>
 </template>
 
 <script setup>
  import Navbar from '@/components/Navbar.vue'
+ import { useRoute } from 'vue-router'
+
+ const route = useRoute()
 </script>
 
 <style>
