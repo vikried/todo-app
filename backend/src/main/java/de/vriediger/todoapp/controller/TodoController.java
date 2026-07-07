@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/todos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TodoController {
 
     private final TodoService service;
@@ -74,7 +74,7 @@ public class TodoController {
             @ApiResponse(responseCode = "400", description = "Ungültige Eingabe", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<TodoDto> createTodo(@RequestBody TodoDto todo) {
+    public ResponseEntity<TodoDto> createTodo(@Valid @RequestBody TodoDto todo) {
         TodoDto created = service.createTodo(todo);
         return ResponseEntity
                 .created(URI.create("/api/todos/" + created.getId()))
@@ -92,7 +92,7 @@ public class TodoController {
             @ApiResponse(responseCode = "404", description = "Todo nicht gefunden", content = @Content)
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<TodoDto> updateTodo(@PathVariable Long id, @RequestBody TodoDto todo) {
+    public ResponseEntity<TodoDto> updateTodo(@PathVariable Long id, @Valid @RequestBody TodoDto todo) {
         return ResponseEntity.ok(service.updateTodo(id, todo));
     }
 

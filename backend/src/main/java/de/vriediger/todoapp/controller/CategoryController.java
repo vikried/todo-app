@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 @RequiredArgsConstructor
-@CrossOrigin
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -72,7 +72,7 @@ public class CategoryController {
         @ApiResponse(responseCode = "400", description = "Ungültige Eingabe", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto dto) {
+    public ResponseEntity<CategoryDto> createCategory(@Valid @RequestBody CategoryDto dto) {
         return ResponseEntity.ok(categoryService.createCategory(dto));
     }
 
@@ -114,7 +114,7 @@ public class CategoryController {
         @ApiResponse(responseCode = "404", description = "Kategorie nicht gefunden", content = @Content)
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<CategoryDto> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryDto categoryDto) {
         return ResponseEntity.ok(categoryService.updateCategory(id, categoryDto));
     }
 }

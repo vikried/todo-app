@@ -1,6 +1,7 @@
 package de.vriediger.todoapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ public class TodoListDto {
     private Long id;
 
     @JsonProperty("name")
+    @NotBlank(message = "Name darf nicht leer sein")
     private String name;
 
     @JsonProperty("template")

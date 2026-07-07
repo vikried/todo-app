@@ -1,5 +1,6 @@
 package de.vriediger.todoapp.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class CategoryDto {
 
     private Long id;
 
+    @NotBlank(message = "Name darf nicht leer sein")
     private String name;
 
     @Builder.Default

@@ -2,8 +2,6 @@ package de.vriediger.todoapp.service;
 
 import de.vriediger.todoapp.dto.CategoryDto;
 import de.vriediger.todoapp.mapper.CategoryMapper;
-import de.vriediger.todoapp.model.Category;
-import de.vriediger.todoapp.model.Todo;
 import de.vriediger.todoapp.repository.CategoryRepository;
 import de.vriediger.todoapp.repository.TodoRepository;
 import lombok.RequiredArgsConstructor;

@@ -5,10 +5,13 @@ import de.vriediger.todoapp.mapper.TodoListMapper;
 import de.vriediger.todoapp.model.Category;
 import de.vriediger.todoapp.model.Todo;
 import de.vriediger.todoapp.model.TodoList;
+import de.vriediger.todoapp.model.User;
 import de.vriediger.todoapp.repository.CategoryRepository;
 import de.vriediger.todoapp.repository.TodoListRepository;
+import de.vriediger.todoapp.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,13 @@ public class TodoListService {
     private final TodoListRepository todoListRepository;
     private final TodoListMapper todoListMapper;
     private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
+
+    private User getCurrentUser() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User nicht gefunden: " + username));
+    }
 
     public List<TodoListDto> getAllLists() {
         return todoListRepository.findByTemplate(false)
@@ -49,6 +59,7 @@ public class TodoListService {
         TodoList newList = new TodoList();
         newList.setName(name);
         newList.setTemplate(false);
+        newList.setUser(getCurrentUser());
 
         // Kategorien klonen
         for (Category templateCategory : template.getCategories()) {
@@ -85,6 +96,7 @@ public class TodoListService {
 
     public TodoListDto createList(TodoListDto todoListDto) {
         var todoList = todoListMapper.toEntity(todoListDto);
+        todoList.setUser(getCurrentUser());
         return todoListMapper.toDto(todoListRepository.save(todoList));
     }
 

@@ -1,5 +1,5 @@
-import {defineStore} from 'pinia'
-import axios from 'axios'
+import { defineStore } from 'pinia'
+import api from '@/api.js'
 
 export const useTodoListStore = defineStore('todoList', {
     state: () => ({
@@ -8,25 +8,22 @@ export const useTodoListStore = defineStore('todoList', {
     }),
     actions: {
         async fetchTodoLists() {
-            const response = await axios.get('http://localhost:8080/api/lists')
+            const response = await api.get('/lists')
             this.todoLists = response.data
         },
         async fetchTemplates() {
-            const response = await axios.get('http://localhost:8080/api/lists/templates')
+            const response = await api.get('/lists/templates')
             this.todoLists = response.data
         },
         async createListFormTemplate(templateId, newListName) {
-            const response = await axios.post(`http://localhost:8080/api/lists/from-template/${templateId}?newListName=${newListName}`);
-            // eigentlich wird hier ein TodoListDto geliefert... kann man das für Routing benutzen?
-
-            //this.todoLists = response.data
+            const response = await api.post(`/lists/from-template/${templateId}?newListName=${newListName}`)
         },
         async deleteTodoList(id) {
-            await axios.delete(`http://localhost:8080/api/lists/${id}`)
+            await api.delete(`/lists/${id}`)
             this.todoLists = this.todoLists.filter(l => l.id !== id)
         },
         async createTodoList(name, template) {
-            const response = await axios.post('http://localhost:8080/api/lists', {'name': name, 'template': template})
+            const response = await api.post('/lists', { 'name': name, 'template': template })
             this.todoLists.push(response.data)
         },
         async findListById(id) {
@@ -36,17 +33,16 @@ export const useTodoListStore = defineStore('todoList', {
                 return listById
             }
 
-            // Wenn nich im Store, dann vom Backend holen
-            const res = await axios.get(`http://localhost:8080/api/lists/${id}`)
+            // Wenn nicht im Store, dann vom Backend holen
+            const res = await api.get(`/lists/${id}`)
             this.selectedList = res.data
             return res.data
         },
         async addCategoryToTodoList(listId, categoryId) {
-            await axios.put(`http://localhost:8080/api/lists/${listId}/categories`, { id: categoryId})
+            await api.put(`/lists/${listId}/categories`, { id: categoryId })
         },
         async updateTodoList(todoList, data) {
-            const response = await axios.patch(`http://localhost:8080/api/lists/${todoList.id}`, data)
-          }
-
+            const response = await api.patch(`/lists/${todoList.id}`, data)
+        }
     }
 })

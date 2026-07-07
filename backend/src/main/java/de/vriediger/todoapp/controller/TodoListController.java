@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/lists")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TodoListController {
 
     private final TodoListService todoListService;
@@ -86,7 +86,7 @@ public class TodoListController {
             @ApiResponse(responseCode = "400", description = "Ungültige Eingabe", content = @Content)
     })
     @PostMapping
-    public ResponseEntity<TodoListDto> createTodoList(@RequestBody TodoListDto todoList) {
+    public ResponseEntity<TodoListDto> createTodoList(@Valid @RequestBody TodoListDto todoList) {
         var created = todoListService.createList(todoList);
         return ResponseEntity
                 .created(URI.create("/api/lists/" + created.getId()))
@@ -138,7 +138,7 @@ public class TodoListController {
             @ApiResponse(responseCode = "404", description = "Todo-Liste nicht gefunden", content = @Content)
     })
     @PatchMapping("/{id}")
-    public ResponseEntity<TodoListDto> updateTodoList(@PathVariable Long id, @RequestBody TodoListDto todoList) {
+    public ResponseEntity<TodoListDto> updateTodoList(@PathVariable Long id, @Valid @RequestBody TodoListDto todoList) {
         return ResponseEntity.ok(todoListService.updateTodoList(id, todoList));
     }
 
