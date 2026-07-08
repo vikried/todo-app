@@ -11,11 +11,13 @@ import de.vriediger.todoapp.repository.TodoListRepository;
 import de.vriediger.todoapp.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +34,40 @@ public class TodoListService {
                 .orElseThrow(() -> new EntityNotFoundException("User nicht gefunden: " + username));
     }
 
+    private boolean isOwner(TodoList todoList, User user) {
+        return todoList.getUser() != null && Objects.equals(todoList.getUser().getId(), user.getId());
+    }
+
+    private boolean hasAccess(TodoList todoList, User user) {
+        if (todoList.isTemplate() || isOwner(todoList, user)) {
+            return true;
+        }
+        return todoList.getSharedWith().stream().anyMatch(shared -> Objects.equals(shared.getId(), user.getId()));
+    }
+
+    private void requireAccess(TodoList todoList, User user) {
+        if (!hasAccess(todoList, user)) {
+            throw new AccessDeniedException("Kein Zugriff auf diese Todo-Liste");
+        }
+    }
+
+    private void requireOwner(TodoList todoList, User user) {
+        if (!todoList.isTemplate() && !isOwner(todoList, user)) {
+            throw new AccessDeniedException("Nur der Eigentümer darf diese Aktion ausführen");
+        }
+    }
+
     public List<TodoListDto> getAllLists() {
-        return todoListRepository.findByTemplate(false)
+        return todoListRepository.findAccessibleLists(false, getCurrentUser())
                 .stream()
                 .map(todoListMapper::toDto)
                 .toList();
     }
 
     public TodoListDto getListById(Long id) {
-        return todoListMapper.toDto(todoListRepository.findById(id).orElseThrow(() -> new RuntimeException("List not found")));
+        var todoList = todoListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireAccess(todoList, getCurrentUser());
+        return todoListMapper.toDto(todoList);
     }
 
     public List<TodoListDto> getAllTemplates() {
@@ -102,9 +129,10 @@ public class TodoListService {
 
     public TodoListDto addCategoryToTodoList(Long todoListId, Long categoryId) {
         var todoList = todoListRepository.findById(todoListId)
-                .orElseThrow(() -> new RuntimeException("TodoList not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireAccess(todoList, getCurrentUser());
         var category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Kategorie nicht gefunden"));
         category.getTodos().forEach(todo -> todo.setTodoList(todoList));
         todoList.getCategories().add(category);
         category.setTodoList(todoList);
@@ -112,7 +140,8 @@ public class TodoListService {
     }
 
     public TodoListDto updateTodoList(Long id, TodoListDto todoListDto) {
-        var todoList = todoListRepository.findById(id).orElseThrow(() -> new RuntimeException("TodoList not found"));
+        var todoList = todoListRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireAccess(todoList, getCurrentUser());
         todoList.setName(todoListDto.getName());
         todoList.setTemplate(todoListDto.getTemplate());
         todoListRepository.save(todoList);
@@ -120,6 +149,34 @@ public class TodoListService {
     }
 
     public void deleteTodoList(Long todoListId) {
+        var todoList = todoListRepository.findById(todoListId).orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireOwner(todoList, getCurrentUser());
         todoListRepository.deleteById(todoListId);
+    }
+
+    @Transactional
+    public TodoListDto shareList(Long listId, String username) {
+        var todoList = todoListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireOwner(todoList, getCurrentUser());
+
+        var targetUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Nutzer nicht gefunden: " + username));
+        if (isOwner(todoList, targetUser)) {
+            throw new IllegalArgumentException("Liste kann nicht mit dem Eigentümer geteilt werden");
+        }
+
+        todoList.getSharedWith().add(targetUser);
+        return todoListMapper.toDto(todoListRepository.save(todoList));
+    }
+
+    @Transactional
+    public TodoListDto unshareList(Long listId, String username) {
+        var todoList = todoListRepository.findById(listId).orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireOwner(todoList, getCurrentUser());
+
+        var targetUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("Nutzer nicht gefunden: " + username));
+        todoList.getSharedWith().removeIf(shared -> Objects.equals(shared.getId(), targetUser.getId()));
+        return todoListMapper.toDto(todoListRepository.save(todoList));
     }
 }

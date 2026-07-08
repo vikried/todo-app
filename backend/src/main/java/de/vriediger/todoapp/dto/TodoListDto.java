@@ -31,4 +31,11 @@ public class TodoListDto {
     @JsonProperty("categories")
     @Builder.Default
     private List<CategoryDto> categories = new ArrayList<>();
+
+    @JsonProperty("ownerUsername")
+    private String ownerUsername;
+
+    @JsonProperty("sharedWith")
+    @Builder.Default
+    private List<String> sharedWith = new ArrayList<>();
 }

@@ -1,6 +1,7 @@
 package de.vriediger.todoapp.controller;
 
 import de.vriediger.todoapp.dto.CategoryDto;
+import de.vriediger.todoapp.dto.ShareRequest;
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.service.TodoListService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -153,5 +154,37 @@ public class TodoListController {
     public ResponseEntity<Void> deleteTodoList(@PathVariable Long id) {
         todoListService.deleteTodoList(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Todo-Liste mit einem Nutzer teilen",
+            description = "Gibt einer Todo-Liste Zugriff für einen weiteren Nutzer. Nur der Eigentümer darf teilen."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Liste erfolgreich geteilt",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TodoListDto.class))),
+            @ApiResponse(responseCode = "403", description = "Kein Eigentümer der Liste", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Liste oder Nutzer nicht gefunden", content = @Content)
+    })
+    @PostMapping("/{id}/share")
+    public ResponseEntity<TodoListDto> shareTodoList(@PathVariable Long id, @Valid @RequestBody ShareRequest request) {
+        return ResponseEntity.ok(todoListService.shareList(id, request.username()));
+    }
+
+    @Operation(
+            summary = "Freigabe einer Todo-Liste entfernen",
+            description = "Entzieht einem Nutzer den Zugriff auf eine Todo-Liste. Nur der Eigentümer darf dies tun."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Freigabe erfolgreich entfernt",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TodoListDto.class))),
+            @ApiResponse(responseCode = "403", description = "Kein Eigentümer der Liste", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Liste oder Nutzer nicht gefunden", content = @Content)
+    })
+    @DeleteMapping("/{id}/share/{username}")
+    public ResponseEntity<TodoListDto> unshareTodoList(@PathVariable Long id, @PathVariable String username) {
+        return ResponseEntity.ok(todoListService.unshareList(id, username));
     }
 }

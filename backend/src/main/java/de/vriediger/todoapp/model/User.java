@@ -25,5 +25,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<TodoList> todoLists = new ArrayList<>();
 }

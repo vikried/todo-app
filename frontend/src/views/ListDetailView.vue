@@ -15,6 +15,14 @@
         <FilePlus class="w-5 h-5" />
         Liste erstellen
       </BaseButton>
+      <BaseButton
+        v-if="isOwner"
+        class="flex items-center gap-2"
+        @click="openSharePopup"
+      >
+        <Share2 class="w-5 h-5" />
+        Teilen
+      </BaseButton>
     </div>
 
     <p v-if="loading" class="text-gray-500 dark:text-gray-400">Lade Liste …</p>
@@ -65,6 +73,52 @@
     </div>
   </div>
 
+  <!-- Popup: Liste teilen -->
+  <div
+    v-if="showSharePopup"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-xl shadow-lg p-6 w-96 dark:bg-gray-900 dark:text-gray-100">
+      <h2 class="text-lg font-semibold mb-4 dark:text-gray-100">Liste teilen</h2>
+
+      <p v-if="!list?.sharedWith || list.sharedWith.length === 0" class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+        Diese Liste ist noch mit niemandem geteilt.
+      </p>
+      <ul v-else class="mb-4">
+        <li v-for="username in list.sharedWith" :key="username"
+            class="flex items-center justify-between border rounded p-2 mb-2 dark:border-gray-700">
+          <span>{{ username }}</span>
+          <IconButton title="Freigabe entfernen" @click="removeShare(username)">
+            <X class="w-4 h-4" />
+          </IconButton>
+        </li>
+      </ul>
+
+      <label class="block mb-2 text-sm text-gray-600 dark:text-gray-100">Mit Nutzer teilen:</label>
+      <select
+        v-model="selectedShareUsername"
+        class="border w-full px-3 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300 dark:text-gray-100 dark:bg-gray-700"
+      >
+        <option disabled value="">Nutzer auswählen</option>
+        <option v-for="username in availableShareUsers" :key="username" :value="username">
+          {{ username }}
+        </option>
+      </select>
+      <p v-if="availableShareUsers.length === 0" class="text-sm text-gray-500 dark:text-gray-400 mt-2">
+        Keine weiteren Nutzer verfügbar.
+      </p>
+
+      <div class="flex justify-end gap-3 mt-4">
+        <BaseButton variant="secondary" @click="showSharePopup = false">
+          Schließen
+        </BaseButton>
+        <BaseButton :disabled="!selectedShareUsername" @click="addShare">
+          Hinzufügen
+        </BaseButton>
+      </div>
+    </div>
+  </div>
+
   <ConfirmDialog
     v-model="showDeleteCategoryConfirm"
     title="Kategorie löschen"
@@ -83,19 +137,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoListStore } from '@/store/todoListStore';
 import { useCategoryStore } from '@/store/categoryStore'
 import {useTodoStore} from "@/store/todoStore.js";
+import { useAuthStore } from '@/store/authStore';
 import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
+import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Save } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Save, Share2, X } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
 const todoStore = useTodoStore();
+const authStore = useAuthStore();
 
 const route = useRoute();
 const listId = route.params.id;
@@ -115,6 +172,15 @@ const showDeleteCategoryConfirm = ref(false);
 const pendingCategoryId = ref(null);
 const showDeleteTodoConfirm = ref(false);
 const pendingTodo = ref(null);
+
+const showSharePopup = ref(false);
+const shareableUsers = ref([]);
+const selectedShareUsername = ref('');
+
+const isOwner = computed(() => list.value && list.value.ownerUsername === authStore.currentUsername);
+const availableShareUsers = computed(() =>
+  shareableUsers.value.filter(username => !list.value?.sharedWith?.includes(username))
+);
 
 const loadList = async() => {
   list.value = await todoListStore.findListById(listId);
@@ -184,6 +250,22 @@ const toggleEditMode = () => {
 function openTemplatePopup(templateId) {
   selectedTemplateId.value = templateId;
   showCreateListFromTemplatePopup.value = true;
+}
+
+const openSharePopup = async () => {
+  selectedShareUsername.value = '';
+  shareableUsers.value = await todoListStore.fetchShareableUsers();
+  showSharePopup.value = true;
+}
+
+const addShare = async () => {
+  if (!selectedShareUsername.value) return;
+  list.value = await todoListStore.shareList(list.value.id, selectedShareUsername.value);
+  selectedShareUsername.value = '';
+}
+
+const removeShare = async (username) => {
+  list.value = await todoListStore.unshareList(list.value.id, username);
 }
 
 onMounted(async () => {

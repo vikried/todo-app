@@ -16,7 +16,16 @@
       <li v-for="list in todoLists" :key="list.id"
           class="border p-3 mb-2 rounded flex items-center justify-between hover:bg-gray-200 cursor-pointer dark:bg-gray-900 dark:hover:bg-gray-700 dark:text-gray-100"
           @click="$router.push(`/lists/${list.id}`)">
-        <span>{{ list.name }}</span>
+        <span class="flex items-center gap-2">
+          {{ list.name }}
+          <span v-if="list.ownerUsername !== authStore.currentUsername"
+                class="text-xs text-gray-500 dark:text-gray-400">
+            (geteilt von {{ list.ownerUsername }})
+          </span>
+          <Users v-else-if="list.sharedWith && list.sharedWith.length > 0"
+                 class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                 :title="`Geteilt mit ${list.sharedWith.join(', ')}`" />
+        </span>
         <IconButton title="Liste löschen" @click.stop="askDelete(list)">
           <Trash2 class="w-4 h-4" />
         </IconButton>
@@ -36,12 +45,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useTodoListStore } from '@/store/todoListStore';
+import { useAuthStore } from '@/store/authStore';
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { Trash2 } from 'lucide-vue-next'
+import { Trash2, Users } from 'lucide-vue-next'
 
 const todoListStore = useTodoListStore()
+const authStore = useAuthStore()
 
 const todoLists = ref([])
 const newListName = ref('')
