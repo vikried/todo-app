@@ -12,31 +12,29 @@
     </form>
   </div>
 
-  <table class="w-full border text-sm">
-    <thead>
-      <tr class="bg-gray-100 dark:bg-gray-700">
-        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100">
-          Todo
-        </th>
-        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100" v-if="!isTemplate">Status</th>
-        <th class="w-1/3 px-4 py-2 text-left dark:text-gray-100" v-if="editMode">Aktionen</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="todo in sortTodos(category.todos)" :key="todo.id" class="border-t">
-        <td class="p-2 truncate max-w-[200px] dark:text-gray-100 dark:bg-gray-700" :title="todo.title">{{ todo.title }}</td>
-        <td class="p-2 dark:bg-gray-700 cursor-pointer" @click="$emit('toggle-todo', todo)" v-if="!isTemplate">
-          <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
-          <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
-        </td>
-        <td class="p-2 dark:bg-gray-700" v-if="editMode">
-          <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
-            <Trash2 class="w-4 h-4" />
-          </IconButton>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <p v-if="!category.todos || category.todos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+    Noch keine Todos in dieser Kategorie.
+  </p>
+  <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
+    <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
+         class="flex items-center gap-1 dark:bg-gray-700">
+      <button v-if="!isTemplate"
+              type="button"
+              class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
+              :title="todo.done ? 'Als offen markieren' : 'Als erledigt markieren'"
+              @click="$emit('toggle-todo', todo)">
+        <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
+        <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
+      </button>
+      <span class="flex-1 min-w-0 py-2 break-words"
+            :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
+        {{ todo.title }}
+      </span>
+      <IconButton v-if="editMode" title="Todo löschen" class="flex-shrink-0 mr-1" @click.stop="$emit('delete-todo', todo)">
+        <Trash2 class="w-4 h-4" />
+      </IconButton>
+    </div>
+  </div>
 </template>
 
 <script setup>

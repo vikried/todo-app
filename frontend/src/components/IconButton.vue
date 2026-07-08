@@ -1,7 +1,7 @@
 <template>
   <button
     :type="type"
-    class="inline-flex items-center justify-center p-1.5 rounded transition"
+    class="inline-flex items-center justify-center min-w-[44px] min-h-[44px] rounded transition"
     :class="variantClass"
     :title="title"
   >

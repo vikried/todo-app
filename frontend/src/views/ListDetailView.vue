@@ -4,8 +4,8 @@
     <div class="flex items-center gap-2 mb-6 dark:text-gray-100">
       <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
         <SquarePen v-if="!editMode" class="w-5 h-5"/>
-        <Save v-if="editMode" class="w-5 h-5"/>
-        {{ editMode ? 'Speichern' : 'Bearbeiten' }}
+        <Check v-if="editMode" class="w-5 h-5"/>
+        {{ editMode ? 'Fertig' : 'Bearbeiten' }}
       </BaseButton>
       <BaseButton
         v-if="list?.template"
@@ -51,7 +51,7 @@
     v-if="showCreateListFromTemplatePopup"
     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
   >
-    <div class="bg-white rounded-xl shadow-lg p-6 w-96 dark:bg-gray-900 dark:text-gray-100">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4 dark:bg-gray-900 dark:text-gray-100">
       <h2 class="text-lg font-semibold mb-4 dark:text-gray-100">Neue Liste aus Template</h2>
 
       <label class="block mb-2 text-sm text-gray-600 dark:text-gray-100">Name der Liste:</label>
@@ -78,7 +78,7 @@
     v-if="showSharePopup"
     class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
   >
-    <div class="bg-white rounded-xl shadow-lg p-6 w-96 dark:bg-gray-900 dark:text-gray-100">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4 dark:bg-gray-900 dark:text-gray-100">
       <h2 class="text-lg font-semibold mb-4 dark:text-gray-100">Liste teilen</h2>
 
       <p v-if="!list?.sharedWith || list.sharedWith.length === 0" class="text-sm text-gray-500 dark:text-gray-400 mb-3">
@@ -147,7 +147,7 @@ import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Save, Share2, X } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Check, Share2, X } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
