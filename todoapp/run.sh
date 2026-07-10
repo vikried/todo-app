@@ -45,6 +45,18 @@ gosu postgres "$PGBIN/psql" -h 127.0.0.1 -c "ALTER ROLE \"${DB_USER}\" WITH PASS
 gosu postgres "$PGBIN/psql" -h 127.0.0.1 -tc "SELECT 1 FROM pg_database WHERE datname='${DB_NAME}'" | grep -q 1 \
     || gosu postgres "$PGBIN/psql" -h 127.0.0.1 -c "CREATE DATABASE \"${DB_NAME}\" OWNER \"${DB_USER}\""
 
+echo "[todoapp] Stelle sicher, dass ${DB_USER} auf allen Objekten in ${DB_NAME} Rechte hat..."
+# Tabellen können aus früheren Läufen (z. B. nach Wechsel von db_user oder einem
+# unvollständigen vorherigen Start) noch der Rolle "postgres" gehören, wodurch
+# ${DB_USER} keinen Zugriff mehr hat ("permission denied for table ..."). Statt
+# Ownership umzuschreiben (scheitert bei "postgres" mit "required by the database
+# system"), bei jedem Start idempotent Rechte gewähren – auch für Tabellen, die
+# postgres künftig noch anlegt (ALTER DEFAULT PRIVILEGES).
+gosu postgres "$PGBIN/psql" -h 127.0.0.1 -d "${DB_NAME}" -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO \"${DB_USER}\""
+gosu postgres "$PGBIN/psql" -h 127.0.0.1 -d "${DB_NAME}" -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO \"${DB_USER}\""
+gosu postgres "$PGBIN/psql" -h 127.0.0.1 -d "${DB_NAME}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${DB_USER}\""
+gosu postgres "$PGBIN/psql" -h 127.0.0.1 -d "${DB_NAME}" -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO \"${DB_USER}\""
+
 echo "[todoapp] Starte Backend..."
 export DB_NAME DB_USER DB_PASSWORD JWT_SECRET
 if [ -n "$CORS_ALLOWED_ORIGINS" ] && [ "$CORS_ALLOWED_ORIGINS" != "null" ]; then
