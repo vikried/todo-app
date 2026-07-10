@@ -1,0 +1,27 @@
+name: Todo-App
+version: "1.0.0"
+slug: todoapp
+description: Familien-Todo-App mit JWT-Auth, Kategorien, Listen-Vorlagen und Listen-Freigabe
+url: https://github.com/vikried/todo-app
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+ingress: true
+ingress_port: 80
+panel_icon: mdi:checkbox-marked-outline
+panel_title: Todo-App
+watchdog: "tcp://127.0.0.1:80"
+options:
+  db_name: tododb
+  db_user: todo
+  db_password: change-me
+  jwt_secret: change-me-change-me-change-me-change-me
+  cors_allowed_origins: ""
+schema:
+  db_name: str
+  db_user: str
+  db_password: password
+  jwt_secret: password
+  cors_allowed_origins: "str?"
