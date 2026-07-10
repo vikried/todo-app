@@ -12,7 +12,7 @@ ingress: true
 ingress_port: 80
 panel_icon: mdi:checkbox-marked-outline
 panel_title: Todo-App
-watchdog: "tcp://127.0.0.1:80"
+watchdog: "tcp://[HOST]:80"
 options:
   db_name: tododb
   db_user: todo
