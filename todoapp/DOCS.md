@@ -43,6 +43,11 @@ Add-on beim Backup mit ausgewählt wird.
 - Das Add-on baut das Image beim ersten Start selbst (kein vorgebautes Image aus
   einer Registry) – dadurch ist Internetzugriff des Host-Systems beim Bauen
   erforderlich, danach nicht mehr.
+- Der Build-Kontext eines Add-ons ist laut Home-Assistant-Vorgabe auf den
+  Add-on-Ordner (`todoapp/`) beschränkt. Das Dockerfile klont daher beim Bauen
+  Backend und Frontend per `git clone` frisch aus dem öffentlichen GitHub-Repo
+  (Branch `main`) – lokale, noch nicht gepushte Änderungen an `backend/` oder
+  `frontend/` fließen erst nach einem Push in den nächsten Add-on-Build ein.
 - Postgres, Backend und nginx laufen als einfache Hintergrundprozesse im selben
   Container (kein s6/Supervisor). Stirbt einer der drei Prozesse, beendet sich
   das Add-on kontrolliert, damit der Home-Assistant-Watchdog es neu starten kann.
@@ -51,5 +56,5 @@ Add-on beim Backup mit ausgewählt wird.
 
 Weiterhin einfach `docker-compose up` im Projekt-Root verwenden – das Add-on
 ändert nichts an diesem bestehenden Setup, es kommt lediglich als zusätzlicher,
-alternativer Weg (`Dockerfile` + `config.yaml` im Repo-Root, `ha-addon/`-Ordner)
-hinzu.
+alternativer Weg (Ordner `todoapp/` im Repo, siehe `repository.yaml` im
+Repo-Root) hinzu.
