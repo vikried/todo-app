@@ -11,9 +11,17 @@ ARG REPO_REF=main
 FROM maven:3.9-eclipse-temurin-17 AS backend-build
 ARG REPO_URL
 ARG REPO_REF
+ARG BUILD_VERSION=dev
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /src
+# Supervisor cached diesen RUN-Layer sonst über Versionsgrenzen hinweg (kein
+# --no-cache beim Build), da sich der Befehlstext nie ändert und Docker nicht
+# weiß, dass sich der Inhalt des geklonten Repos geändert hat. BUILD_VERSION
+# (von Supervisor automatisch aus config.yaml als --build-arg übergeben) im
+# selben RUN referenzieren erzwingt bei jedem Versions-Bump einen echten
+# Neu-Clone.
+RUN echo "Building version ${BUILD_VERSION}" \
+    && git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /src
 WORKDIR /src/backend
 RUN mvn clean package -DskipTests
 
@@ -21,9 +29,11 @@ RUN mvn clean package -DskipTests
 FROM node:20 AS frontend-build
 ARG REPO_URL
 ARG REPO_REF
+ARG BUILD_VERSION=dev
 RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /src
+RUN echo "Building version ${BUILD_VERSION}" \
+    && git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /src
 WORKDIR /src/frontend
 RUN npm install
 # frontend/.env setzt VITE_API_BASE_URL für den lokalen "npm run dev"-Workflow

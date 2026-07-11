@@ -13,8 +13,17 @@ const routes = [
   { path: '/settings', component: SettingsView, name: 'Settings' }
 ]
 
+// Läuft die App hinter einem dynamischen Pfad-Präfix (z. B. Home Assistant
+// Ingress: /api/hassio_ingress/<token>/), spiegelt der von nginx injizierte
+// <base href>-Tag diesen Präfix wider. Router-Basis daraus zur Laufzeit
+// ableiten statt eines fest einkompilierten Werts.
+const baseElement = document.querySelector('base')
+const routerBase = baseElement
+  ? new URL(baseElement.href, window.location.href).pathname
+  : '/'
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(routerBase),
   routes
 })
 
