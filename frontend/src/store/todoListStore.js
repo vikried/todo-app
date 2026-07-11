@@ -26,6 +26,15 @@ export const useTodoListStore = defineStore('todoList', {
             const response = await api.post('/lists', { 'name': name, 'template': template })
             this.todoLists.push(response.data)
         },
+        async importTodoList(file, name, template) {
+            const formData = new FormData()
+            formData.append('file', file)
+            formData.append('name', name)
+            formData.append('template', template)
+            const response = await api.post('/lists/import', formData)
+            this.todoLists.push(response.data)
+            return response.data
+        },
         async findListById(id) {
             const listById = this.todoLists.find(l => l.id === Number(id))
             if (listById) {

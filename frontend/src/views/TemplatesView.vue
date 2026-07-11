@@ -7,6 +7,25 @@
       <BaseButton type="submit">Erstellen</BaseButton>
     </form>
 
+    <form @submit.prevent="importTemplate" class="mb-2 flex flex-wrap gap-2 items-center">
+      <input v-model="importName" placeholder="Name des importierten Templates" class="border rounded p-2 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700" />
+      <input
+        ref="fileInput"
+        type="file"
+        accept=".csv,.json"
+        @change="onFileSelected"
+        class="text-sm text-gray-600 dark:text-gray-300 file:mr-2 file:py-2 file:px-3 file:rounded file:border-0 file:bg-gray-200 file:text-gray-800 file:cursor-pointer hover:file:bg-gray-300 dark:file:bg-gray-700 dark:file:text-gray-100 dark:hover:file:bg-gray-600"
+      />
+      <BaseButton type="submit" variant="secondary" :disabled="!importFile || importing">
+        {{ importing ? 'Importiere …' : 'Importieren' }}
+      </BaseButton>
+    </form>
+    <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">
+      CSV mit Spalten „category" (optional) und „title", oder JSON im Format
+      <code>&#123;"categories":[&#123;"name":"…","todos":["…"]&#125;],"todos":["…"]&#125;</code>.
+    </p>
+    <p v-if="importError" class="text-sm text-red-600 dark:text-red-400 mb-4">{{ importError }}</p>
+
     <p v-if="loading" class="text-gray-500 dark:text-gray-400">Lade Templates …</p>
     <p v-else-if="templateLists.length === 0" class="text-gray-500 dark:text-gray-400">
       Noch keine Templates. Leg dein erstes Template an!
@@ -50,6 +69,17 @@ const loading = ref(true)
 const showConfirm = ref(false)
 const pendingTemplate = ref(null)
 
+const importName = ref('')
+const importFile = ref(null)
+const importing = ref(false)
+const importError = ref('')
+const fileInput = ref(null)
+
+const onFileSelected = (event) => {
+  importFile.value = event.target.files[0] ?? null
+  importError.value = ''
+}
+
 const loadTemplates = async () => {
   loading.value = true
   try {
@@ -65,6 +95,24 @@ const createTemplate = async () => {
   await todoListStore.createTodoList(newTemplateName.value, true)
   newTemplateName.value = ''
   loadTemplates()
+}
+
+const importTemplate = async () => {
+  if (!importFile.value) return
+  importing.value = true
+  importError.value = ''
+  try {
+    const name = importName.value || importFile.value.name.replace(/\.(csv|json)$/i, '')
+    await todoListStore.importTodoList(importFile.value, name, true)
+    importName.value = ''
+    importFile.value = null
+    if (fileInput.value) fileInput.value.value = ''
+    loadTemplates()
+  } catch (err) {
+    importError.value = err.response?.data?.error || 'Import fehlgeschlagen. Bitte Datei prüfen.'
+  } finally {
+    importing.value = false
+  }
 }
 
 const askDelete = (template) => {

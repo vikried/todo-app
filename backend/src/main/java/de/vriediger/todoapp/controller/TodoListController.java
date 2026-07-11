@@ -12,8 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 
@@ -111,6 +113,30 @@ public class TodoListController {
             @PathVariable Long templateId, @RequestParam("newListName") String newListName) {
         TodoListDto listFromTemplate = todoListService.createListFromTemplate(templateId, newListName);
         return ResponseEntity.ok(listFromTemplate);
+    }
+
+    @Operation(
+            summary = "Todo-Liste aus CSV oder JSON importieren",
+            description = "Erstellt eine neue Todo-Liste (standardmäßig als Template) aus einer hochgeladenen "
+                    + "CSV- oder JSON-Datei. CSV erwartet die Spalten \"category\" (optional) und \"title\"; "
+                    + "JSON erwartet {\"categories\":[{\"name\":\"...\",\"todos\":[\"...\"]}],\"todos\":[\"...\"]}. "
+                    + "Das Dateiformat wird an der Dateiendung bzw. am Content-Type erkannt."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Todo-Liste erfolgreich importiert",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TodoListDto.class))),
+            @ApiResponse(responseCode = "400", description = "Datei ungültig oder leer", content = @Content)
+    })
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TodoListDto> importTodoList(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("name") String name,
+            @RequestParam(value = "template", defaultValue = "true") boolean template) {
+        TodoListDto imported = todoListService.importFromFile(file, name, template);
+        return ResponseEntity
+                .created(URI.create("/api/lists/" + imported.getId()))
+                .body(imported);
     }
 
     @Operation(

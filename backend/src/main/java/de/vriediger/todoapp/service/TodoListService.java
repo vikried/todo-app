@@ -1,5 +1,7 @@
 package de.vriediger.todoapp.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.vriediger.todoapp.dto.TemplateImportDto;
 import de.vriediger.todoapp.dto.TodoListDto;
 import de.vriediger.todoapp.mapper.TodoListMapper;
 import de.vriediger.todoapp.model.Category;
@@ -11,12 +13,24 @@ import de.vriediger.todoapp.repository.TodoListRepository;
 import de.vriediger.todoapp.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -27,6 +41,7 @@ public class TodoListService {
     private final TodoListMapper todoListMapper;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
 
     private User getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -119,6 +134,105 @@ public class TodoListService {
         }
 
         return todoListMapper.toDto(todoListRepository.save(newList));
+    }
+
+    @Transactional
+    public TodoListDto importFromFile(MultipartFile file, String name, boolean template) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("Datei ist leer");
+        }
+
+        TodoList newList = new TodoList();
+        newList.setName(name);
+        newList.setTemplate(template);
+        newList.setUser(getCurrentUser());
+
+        try {
+            if (isJson(file)) {
+                importJson(file, newList);
+            } else {
+                importCsv(file, newList);
+            }
+        } catch (IOException | RuntimeException e) {
+            throw new IllegalArgumentException("Datei konnte nicht gelesen werden: " + e.getMessage());
+        }
+
+        if (newList.getCategories().isEmpty() && newList.getTodos().isEmpty()) {
+            throw new IllegalArgumentException("Datei enthält keine importierbaren Einträge");
+        }
+
+        return todoListMapper.toDto(todoListRepository.save(newList));
+    }
+
+    private boolean isJson(MultipartFile file) {
+        String filename = file.getOriginalFilename();
+        return (filename != null && filename.toLowerCase(Locale.ROOT).endsWith(".json"))
+                || MediaType.APPLICATION_JSON_VALUE.equals(file.getContentType());
+    }
+
+    private void importJson(MultipartFile file, TodoList list) throws IOException {
+        TemplateImportDto payload = objectMapper.readValue(file.getInputStream(), TemplateImportDto.class);
+        for (TemplateImportDto.CategoryImport categoryImport : payload.getCategories()) {
+            if (categoryImport.getName() == null || categoryImport.getName().isBlank()) {
+                continue;
+            }
+            Category category = addCategory(list, categoryImport.getName());
+            for (String title : categoryImport.getTodos()) {
+                addTodo(list, category, title);
+            }
+        }
+        for (String title : payload.getTodos()) {
+            addTodo(list, null, title);
+        }
+    }
+
+    private void importCsv(MultipartFile file, TodoList list) throws IOException {
+        Map<String, Category> categoriesByName = new LinkedHashMap<>();
+        try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+             CSVParser parser = CSVFormat.DEFAULT.builder()
+                     .setHeader()
+                     .setSkipHeaderRecord(true)
+                     .setIgnoreSurroundingSpaces(true)
+                     .setTrim(true)
+                     .build()
+                     .parse(reader)) {
+            for (CSVRecord record : parser) {
+                if (!record.isMapped("title")) {
+                    continue;
+                }
+                String title = record.get("title");
+                if (title == null || title.isBlank()) {
+                    continue;
+                }
+                String categoryName = record.isMapped("category") ? record.get("category") : null;
+                Category category = null;
+                if (categoryName != null && !categoryName.isBlank()) {
+                    category = categoriesByName.computeIfAbsent(categoryName, n -> addCategory(list, n));
+                }
+                addTodo(list, category, title);
+            }
+        }
+    }
+
+    private Category addCategory(TodoList list, String name) {
+        Category category = new Category();
+        category.setName(name);
+        category.setTodoList(list);
+        list.getCategories().add(category);
+        return category;
+    }
+
+    private void addTodo(TodoList list, Category category, String title) {
+        Todo todo = new Todo();
+        todo.setTitle(title);
+        todo.setDone(false);
+        todo.setTodoList(list);
+        todo.setCategory(category);
+        if (category != null) {
+            category.getTodos().add(todo);
+        } else {
+            list.getTodos().add(todo);
+        }
     }
 
     public TodoListDto createList(TodoListDto todoListDto) {
