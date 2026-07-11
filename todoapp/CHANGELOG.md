@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.8
+- CSV und JSON Import der Templates
+
 ## 1.0.7
 
 - Registrierung/Login schlugen nach 1.0.6 mit 404 bzw. „Invalid CORS
