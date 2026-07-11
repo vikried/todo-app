@@ -1,5 +1,5 @@
 name: Todo-App
-version: "1.0.4"
+version: "1.0.5"
 slug: todoapp
 description: Familien-Todo-App mit JWT-Auth, Kategorien, Listen-Vorlagen und Listen-Freigabe
 url: https://github.com/vikried/todo-app

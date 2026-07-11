@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.5
+
+- Leere Seite beim Öffnen der App behoben: `frontend/.env` legt
+  `VITE_API_BASE_URL` fest auf `http://localhost:8080/api` für den lokalen
+  `npm run dev`-Workflow fest. Das wurde beim Add-on-Build mit einkompiliert
+  – im Browser des Endnutzers bedeutet „localhost" aber dessen eigenes
+  Gerät, sodass jeder API-Aufruf ins Leere lief. Der Add-on-Build setzt
+  `VITE_API_BASE_URL=/api` (relativ) jetzt explizit vor `npm run build`.
+
 ## 1.0.4
 
 - Add-on-Dateien in den erforderlichen `todoapp/`-Unterordner verschoben, Build

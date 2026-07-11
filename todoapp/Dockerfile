@@ -26,6 +26,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends git ca-certific
 RUN git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" /src
 WORKDIR /src/frontend
 RUN npm install
+# frontend/.env setzt VITE_API_BASE_URL für den lokalen "npm run dev"-Workflow
+# fest auf http://localhost:8080/api. Im Add-on werden Frontend und Backend
+# aber über dieselbe nginx-Origin ausgeliefert (Ingress hat außerdem keinen
+# Zugriff auf "localhost:8080" des Endgeräts) – hier per relativem Pfad
+# überschreiben, bevor Vite baut. Vite bevorzugt bereits gesetzte
+# Prozess-Env-Variablen gegenüber Werten aus .env-Dateien.
+ENV VITE_API_BASE_URL=/api
 RUN npm run build
 
 # ---- Laufzeit-Image ----
