@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.0.7
+
+- Registrierung/Login schlugen nach 1.0.6 mit 404 bzw. „Invalid CORS
+  request" (403) fehl: Die API-Basis-URL wurde als absoluter Pfad (`/api`)
+  gebaut, der sich immer gegen die Domain-Wurzel statt gegen den
+  Ingress-Präfix auflöst. `api.js` leitet die Basis jetzt zur Laufzeit aus
+  demselben `<base href>`-Tag ab wie der Router. Zusätzlich entfernt nginx
+  beim Proxy zum (nur intern erreichbaren) Backend den `Origin`-Header, da
+  sich dieser je nach Home-Assistant-Hostname ändert und sich nicht in
+  einer festen CORS-Allow-Liste pflegen lässt.
+- `VITE_API_BASE_URL` (Build-Env-Var, `.env`-Datei) komplett entfernt und
+  durch die Laufzeit-Ableitung ersetzt; `npm run dev` nutzt stattdessen
+  einen Vite-Dev-Server-Proxy für `/api`.
+- BUILD_VERSION (von Supervisor automatisch übergeben) im git-clone-Schritt
+  referenziert, damit Docker diesen Layer bei jedem Versions-Bump neu
+  ausführt statt einen alten Checkout zu cachen.
+
+Lokal per Browser-Automatisierung verifiziert: Registrierung, Login und
+Laden der Listen liefern 200, keine Konsolenfehler.
+
 ## 1.0.6
 - Leere Seite weiterer Versuch
 

@@ -21,4 +21,12 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  server: {
+    proxy: {
+      // Spiegelt den /api-Proxy von nginx (docker-compose & Add-on) für den
+      // lokalen "npm run dev"-Workflow, damit api.js überall denselben
+      // relativen "/api"-Pfad verwenden kann.
+      '/api': 'http://localhost:8080',
+    },
+  },
 })
