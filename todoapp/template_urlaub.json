@@ -1,0 +1,132 @@
+{
+  "categories": [
+    {
+      "name": "Dokumente & Unterlagen",
+      "todos": [
+        "Adresse & Telefonnummer der Unterkunft",
+        "Auslandskrankenversicherung / Reiseversicherung",
+        "Bargeld in Euro & Kreditkarte",
+        "Europäische Krankenversicherungskarte (EHIC, Rückseite der Karte)",
+        "Führerschein & Fahrzeugschein",
+        "Mutterpass",
+        "Notfallkontakt: nächste Geburtsklinik am Urlaubsort",
+        "Personalausweise / Reisepässe (alle drei)",
+        "U-Heft / Impfpass des Kindes"
+      ]
+    },
+    {
+      "name": "Schwangerschaft",
+      "todos": [
+        "Ausreichend Wasser & Snacks für unterwegs",
+        "Bequeme Sandalen für geschwollene Füße",
+        "Bequeme, weite Kleidung für warme Tage",
+        "Kompressionsstrümpfe für lange Fahrt/Flug",
+        "Schwangerschaftskissen (klein, für Auto/Flug)",
+        "Sonnencreme LSF 50 fürs Gesicht (Pigmentflecken)",
+        "Stütz- / Still-BH",
+        "Übliche Nahrungsergänzung (Folsäure, Eisen o. Ä.)",
+        "Umstands-Bikini / Schwangerschaftsbadeanzug"
+      ]
+    },
+    {
+      "name": "Kleidung – Erwachsene",
+      "todos": [
+        "Badesachen (mehrfach)",
+        "Badeschuhe / Flip-Flops",
+        "Bequeme Schuhe zum Laufen",
+        "Ein warmer Pullover für kühle Abende",
+        "Etwas Schickeres für ein Abendessen",
+        "Leichte Regenjacke",
+        "Leichte, luftige Kleidung",
+        "Sonnenbrille",
+        "Sonnenhut / Cap"
+      ]
+    },
+    {
+      "name": "Kleidung – Kind",
+      "todos": [
+        "Badesachen mit UV-Schutz",
+        "Bequeme, feste Schuhe",
+        "Leichte Jacke für den Abend",
+        "Regenjacke",
+        "Schlafanzüge",
+        "Sonnenhut mit Nackenschutz",
+        "Wechselkleidung (reichlich einplanen)"
+      ]
+    },
+    {
+      "name": "Strand-Ausrüstung",
+      "todos": [
+        "Faltbarer Strandwindschutz",
+        "Kühltasche mit Kühlakkus",
+        "Leichte Strandtasche / Bollerwagen",
+        "Schwimmflügel oder Schwimmweste",
+        "Sonnenschirm oder Strandmuschel",
+        "Strandspielzeug (Eimer, Schaufel, Förmchen)",
+        "Strandtücher",
+        "Wasserdichte Handytasche"
+      ]
+    },
+    {
+      "name": "Für das Kind unterwegs",
+      "todos": [
+        "Autositz (falls nicht im Mietwagen vorhanden)",
+        "Buggy, geeignet für Sand",
+        "Fläschchen / Becher",
+        "Lieblingskuscheltier & Lieblingsspielzeug",
+        "Reisebett / Beistellbett",
+        "Snacks für die Anreise",
+        "UV-Sonnenschutzzelt für den Strand",
+        "Windeln, Feuchttücher, Wickelunterlage"
+      ]
+    },
+    {
+      "name": "Hygiene & Gesundheit",
+      "todos": [
+        "After-Sun-Lotion",
+        "Kleines Erste-Hilfe-Set",
+        "Mittel gegen Reiseübelkeit (kindgerecht)",
+        "Mückenschutz",
+        "Reiseapotheke (Pflaster, Fieberthermometer, Wund- & Brandsalbe)",
+        "Sonnencreme hoher LSF für alle",
+        "Übliche Medikamente & Rezepte",
+        "Zahnpflege-Set für alle"
+      ]
+    },
+    {
+      "name": "Sonstiges",
+      "todos": [
+        "Buch / Hörbuch für lange Fahrten",
+        "Insektenschutz-Armband für Kind",
+        "Ladekabel & Powerbank",
+        "Picknickdecke",
+        "Wäscheklammern / kleine Wäscheleine",
+        "Wasserdichte Kamera / Handyhülle",
+        "Wiederverschließbare Beutel (nasse Sachen, Sand)"
+      ]
+    },
+    {
+      "name": "Für den Hund",
+      "todos": [
+        "Aktuelle Zecken- & Wurmbehandlung",
+        "Aktuelles Foto vom Hund (falls er entläuft)",
+        "Chip-Nummer notiert / Chip funktionsfähig",
+        "Erste-Hilfe-Set für den Hund (inkl. Zeckenzange)",
+        "EU-Heimtierausweis (Tollwutimpfung, gültig?)",
+        "Faltbarer Fress- & Trinknapf für unterwegs",
+        "Halsband/Geschirr mit ID-Anhänger",
+        "Handtuch zum Abtrocknen nach dem Baden",
+        "Hundebett oder Decke",
+        "Hundefutter für die gesamte Reisezeit",
+        "Kotbeutel",
+        "Leine & Ersatzleine",
+        "Lieblingsspielzeug & Leckerlis",
+        "Maulkorb (in Frankreich für gelistete Rassen Pflicht)",
+        "Sonnenschutz/Kühlmatte für heiße Tage",
+        "Tierarzt-Kontakt am Urlaubsort recherchiert",
+        "Transportbox oder Sicherheitsgurt fürs Auto",
+        "Vorab geprüft: Strand-/Leinenregeln am Reiseziel"
+      ]
+    }
+  ]
+}
