@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.6
+- Leere Seite weiterer Versuch
+
 ## 1.0.5
 
 - Leere Seite beim Öffnen der App behoben: `frontend/.env` legt
