@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.9
+- Import Funktion ein-/ausklappbar
+
 ## 1.0.8
 - CSV und JSON Import der Templates
 
