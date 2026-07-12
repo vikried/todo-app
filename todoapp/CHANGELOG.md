@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.10
+
+- Optionalen Direkt-Port (80/tcp, Default 8099) ergänzt, damit die neue
+  Home-Assistant-Integration (`custom_components/todoapp`, siehe
+  [README](../custom_components/todoapp/README.md)) das Backend außerhalb
+  von Ingress erreichen kann. Damit lassen sich Listen/Kategorien/Items
+  per Assist-Sprachsteuerung (App-/Browser-Mikrofon, Voice-Hardware)
+  pflegen. Backend-seitig: `POST /api/todos` erstellte bisher „verwaiste"
+  Todos ohne Listen-/Kategorie-Verknüpfung (nie behobener Mapper-Bug) –
+  jetzt korrekt verknüpft, inkl. neuer `categoryName`-Option (legt die
+  Kategorie bei Bedarf an, statt nur per ID zu referenzieren).
+
 ## 1.0.9
 - Import Funktion ein-/ausklappbar
 

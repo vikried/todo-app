@@ -1,5 +1,5 @@
 name: Todo-App
-version: "1.0.9"
+version: "1.0.10"
 slug: todoapp
 description: Familien-Todo-App mit JWT-Auth, Kategorien, Listen-Vorlagen und Listen-Freigabe
 url: https://github.com/vikried/todo-app
@@ -13,6 +13,15 @@ ingress_port: 80
 panel_icon: mdi:checkbox-marked-outline
 panel_title: Todo-App
 watchdog: "tcp://[HOST]:80"
+ports:
+  80/tcp: 8099
+ports_description:
+  80/tcp: >-
+    Optionaler Direktzugriff auf App/API (ohne Ingress-Token-Präfix) - wird
+    z. B. von der todoapp-Integration in custom_components/ benötigt, die
+    Listen/Kategorien/Items als Home-Assistant-Todo-Entities bereitstellt
+    (nutzbar per Assist-Sprachsteuerung). Für reine Weboberflächen-Nutzung
+    nicht nötig, dafür weiterhin Ingress verwenden.
 options:
   db_name: tododb
   db_user: todo

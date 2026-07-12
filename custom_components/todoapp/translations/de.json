@@ -1,0 +1,22 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Todo-App verbinden",
+        "description": "Zugangsdaten für dein Todo-App-Konto. Beim Add-on: URL des freigegebenen Direkt-Ports verwenden (nicht die Ingress-URL). Bei docker-compose: z. B. http://192.168.1.10:8080",
+        "data": {
+          "url": "Backend-URL",
+          "username": "Benutzername",
+          "password": "Passwort"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Anmeldung fehlgeschlagen. Benutzername/Passwort prüfen.",
+      "cannot_connect": "Verbindung zum Backend fehlgeschlagen. URL prüfen."
+    },
+    "abort": {
+      "already_configured": "Diese URL ist bereits konfiguriert."
+    }
+  }
+}

@@ -21,6 +21,13 @@ public class TodoDto implements Comparable<TodoDto> {
 
     private Long categoryId;
 
+    /**
+     * Nur für Eingaben: Kategorie anhand des Namens statt der ID setzen (legt
+     * sie bei Bedarf in der Ziel-Liste an). Leerstring entfernt die Kategorie.
+     * Wird ignoriert, wenn categoryId gesetzt ist.
+     */
+    private String categoryName;
+
     @Override
     public int compareTo(TodoDto other) {
         return this.getId().compareTo(other.getId());
