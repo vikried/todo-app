@@ -4,6 +4,7 @@
   "codeowners": ["@vikried"],
   "config_flow": true,
   "documentation": "https://github.com/vikried/todo-app",
+  "issue_tracker": "https://github.com/vikried/todo-app/issues",
   "integration_type": "service",
   "iot_class": "local_polling",
   "requirements": [],
