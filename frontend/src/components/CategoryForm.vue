@@ -40,7 +40,10 @@
   </p>
   <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
     <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
-         class="flex items-center gap-1 dark:bg-gray-700">
+         :draggable="editMode"
+         class="flex items-center gap-1 dark:bg-gray-700"
+         :class="{ 'cursor-grab': editMode }"
+         @dragstart="onDragStart(todo, $event)">
       <button v-if="!isTemplate"
               type="button"
               class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
@@ -76,21 +79,17 @@
       <h2 class="text-lg font-semibold mb-4 dark:text-gray-100 break-words">
         „{{ movingTodo.title }}" verschieben nach:
       </h2>
-      <ul class="mb-4 divide-y dark:divide-gray-700 border rounded dark:border-gray-700 overflow-hidden">
-        <li v-for="target in categories" :key="target.id">
-          <button
-            type="button"
-            class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            :disabled="target.id === category.id"
-            @click="confirmMove(target.id)"
-          >
-            <span>{{ target.name }}</span>
-            <Check v-if="target.id === category.id" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-          </button>
-        </li>
-      </ul>
-      <div class="flex justify-end">
+      <select
+        v-model="moveTargetId"
+        class="border w-full px-3 py-2 rounded mb-4 dark:text-gray-100 dark:bg-gray-700"
+      >
+        <option v-for="target in categories" :key="target.id" :value="target.id">
+          {{ target.name }}
+        </option>
+      </select>
+      <div class="flex justify-end gap-3">
         <BaseButton variant="secondary" @click="closeMovePopup">Abbrechen</BaseButton>
+        <BaseButton :disabled="moveTargetId === category.id" @click="confirmMove">OK</BaseButton>
       </div>
     </div>
   </div>
@@ -152,19 +151,28 @@ const cancelEditName = () => {
 }
 
 const movingTodo = ref(null);
+const moveTargetId = ref(null);
 
 const openMovePopup = (todo) => {
   movingTodo.value = todo;
+  moveTargetId.value = props.category.id;
 }
 
 const closeMovePopup = () => {
   movingTodo.value = null;
+  moveTargetId.value = null;
 }
 
-const confirmMove = (targetCategoryId) => {
-  if (targetCategoryId === props.category.id || !movingTodo.value) return;
-  emit('move-todo', movingTodo.value, targetCategoryId);
+const confirmMove = () => {
+  if (!movingTodo.value || moveTargetId.value === props.category.id) return;
+  emit('move-todo', movingTodo.value, moveTargetId.value);
   closeMovePopup();
+}
+
+const onDragStart = (todo, event) => {
+  if (!props.editMode) return;
+  event.dataTransfer.setData('text/plain', String(todo.id));
+  event.dataTransfer.effectAllowed = 'move';
 }
 
 function sortTodos(todos) {

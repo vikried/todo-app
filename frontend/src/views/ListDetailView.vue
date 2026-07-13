@@ -63,7 +63,15 @@
         Noch keine Kategorien in dieser Liste.
       </p>
 
-      <div v-for="category in categories" :key="category.id" class="mb-6 border rounded p-3">
+      <div
+        v-for="category in categories"
+        :key="category.id"
+        class="mb-6 border rounded p-3"
+        :class="{ 'ring-2 ring-blue-400 dark:ring-blue-500': editMode && dragOverCategoryId === category.id }"
+        @dragover.prevent="onDragOverCategory(category)"
+        @dragleave="onDragLeaveCategory(category)"
+        @drop.prevent="onDropOnCategory(category, $event)"
+      >
         <CategoryForm
           :category="category"
           :categories="categories"
@@ -167,6 +175,16 @@
     message="Dieses Todo wird unwiderruflich gelöscht."
     @confirm="confirmDeleteTodo"
     @cancel="showDeleteTodoConfirm = false"
+  />
+
+  <ConfirmDialog
+    v-model="showMoveConfirm"
+    title="Todo verschieben"
+    :message="`Möchtest du '${pendingMove?.todo?.title}' wirklich in die Kategorie '${pendingMove?.targetCategory?.name}' verschieben?`"
+    confirm-label="Verschieben"
+    confirm-variant="primary"
+    @confirm="confirmMoveViaDrop"
+    @cancel="cancelMoveViaDrop"
   />
 </template>
 
@@ -315,6 +333,44 @@ const renameCategory = async (category, newName) => {
 const moveTodo = async (todo, newCategoryId) => {
   await todoStore.updateTodo(todo, { ...todo, categoryId: newCategoryId });
   loadCategories();
+}
+
+const dragOverCategoryId = ref(null);
+const showMoveConfirm = ref(false);
+const pendingMove = ref(null);
+
+const onDragOverCategory = (category) => {
+  if (!editMode.value) return;
+  dragOverCategoryId.value = category.id;
+}
+
+const onDragLeaveCategory = (category) => {
+  if (dragOverCategoryId.value === category.id) {
+    dragOverCategoryId.value = null;
+  }
+}
+
+const onDropOnCategory = (category, event) => {
+  dragOverCategoryId.value = null;
+  if (!editMode.value) return;
+  const draggedId = Number(event.dataTransfer.getData('text/plain'));
+  if (!draggedId) return;
+  const draggedTodo = categories.value?.flatMap(c => c.todos || []).find(t => t.id === draggedId);
+  if (!draggedTodo || draggedTodo.categoryId === category.id) return;
+  pendingMove.value = { todo: draggedTodo, targetCategory: category };
+  showMoveConfirm.value = true;
+}
+
+const confirmMoveViaDrop = () => {
+  if (!pendingMove.value) return;
+  moveTodo(pendingMove.value.todo, pendingMove.value.targetCategory.id);
+  showMoveConfirm.value = false;
+  pendingMove.value = null;
+}
+
+const cancelMoveViaDrop = () => {
+  showMoveConfirm.value = false;
+  pendingMove.value = null;
 }
 
 function openTemplatePopup(templateId) {

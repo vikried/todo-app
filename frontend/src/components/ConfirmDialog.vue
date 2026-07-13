@@ -9,7 +9,7 @@
 
       <div class="flex justify-end gap-3">
         <BaseButton variant="secondary" @click="$emit('cancel')">Abbrechen</BaseButton>
-        <BaseButton variant="danger" @click="$emit('confirm')">Löschen</BaseButton>
+        <BaseButton :variant="confirmVariant" @click="$emit('confirm')">{{ confirmLabel }}</BaseButton>
       </div>
     </div>
   </div>
@@ -21,7 +21,9 @@ import BaseButton from '@/components/BaseButton.vue'
 defineProps({
   modelValue: { type: Boolean, default: false },
   title: { type: String, default: 'Wirklich löschen?' },
-  message: { type: String, default: 'Diese Aktion kann nicht rückgängig gemacht werden.' }
+  message: { type: String, default: 'Diese Aktion kann nicht rückgängig gemacht werden.' },
+  confirmLabel: { type: String, default: 'Löschen' },
+  confirmVariant: { type: String, default: 'danger' }
 })
 
 defineEmits(['confirm', 'cancel'])
