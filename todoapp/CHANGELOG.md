@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.11
+
+- Listen und Kategorien lassen sich umbenennen (Stift-Icon im
+  Bearbeiten-Modus, Speichern/Abbrechen per Button statt Enter/Blur).
+- Todos lassen sich in eine andere Kategorie derselben Liste verschieben:
+  per Icon → Popup mit Kategorie-Dropdown und OK/Abbrechen, oder direkt
+  per Drag-and-Drop auf die Ziel-Kategorie (mit Bestätigungsabfrage vor
+  dem eigentlichen Verschieben).
+- Bug behoben: Todos, die über das Kategorie-Formular angelegt wurden,
+  bekamen keine `todo_list_id` gesetzt (nur die Kategorie-Zuordnung).
+  Eine Datenbank-Migration korrigiert davon betroffene Bestandsdaten
+  automatisch beim ersten Start dieser Version.
+- Repository ist jetzt zusätzlich über HACS als Custom Repository
+  installierbar (`hacs.json` ergänzt).
+
 ## 1.0.10
 
 - Optionalen Direkt-Port (80/tcp, Default 8099) ergänzt, damit die neue
