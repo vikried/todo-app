@@ -38,7 +38,7 @@
   <p v-if="!category.todos || category.todos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
     Noch keine Todos in dieser Kategorie.
   </p>
-  <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
+  <div v-else class="border rounded dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-600 overflow-hidden">
     <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
          :draggable="editMode"
          class="dark:bg-gray-700 px-1"
