@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.12
+
+- Mobile-Ansicht überarbeitet: Dark-Mode-Hintergrund deckte bei kurzen
+  Seiten nicht die volle Bildschirmhöhe ab (sichtbarer Farbbruch) – behoben.
+- Lange Todo-Titel im Bearbeiten-Modus wurden durch die Verschieben-/
+  Löschen-Icons in eine sehr schmale Spalte gequetscht (Wort-für-Wort-
+  Umbruch, Icons vertikal mittig schwebend). Icons stehen jetzt in einer
+  eigenen Zeile über dem Text, der Text bekommt die volle Breite.
+
 ## 1.0.11
 
 - Listen und Kategorien lassen sich umbenennen (Stift-Icon im
