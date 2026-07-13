@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.13
+
+- Trennlinie zwischen Todo-Items einer Kategorie sichtbar gemacht: Im
+  Light Mode fehlte ihr komplett die Farbe, im Dark Mode war sie exakt
+  gleichfarbig mit dem Zeilen-Hintergrund – in beiden Fällen praktisch
+  unsichtbar.
+
 ## 1.0.12
 
 - Mobile-Ansicht überarbeitet: Dark-Mode-Hintergrund deckte bei kurzen
