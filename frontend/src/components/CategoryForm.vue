@@ -41,32 +41,35 @@
   <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
     <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
          :draggable="editMode"
-         class="flex items-center gap-1 dark:bg-gray-700"
+         class="dark:bg-gray-700 px-1"
          :class="{ 'cursor-grab': editMode }"
          @dragstart="onDragStart(todo, $event)">
-      <button v-if="!isTemplate"
-              type="button"
-              class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
-              :title="todo.done ? 'Als offen markieren' : 'Als erledigt markieren'"
-              @click="$emit('toggle-todo', todo)">
-        <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
-        <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
-      </button>
-      <span class="flex-1 min-w-0 py-2 break-words"
-            :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
-        {{ todo.title }}
-      </span>
-      <IconButton
-        v-if="editMode && categories && categories.length > 1"
-        title="In andere Kategorie verschieben"
-        class="flex-shrink-0"
-        @click.stop="openMovePopup(todo)"
-      >
-        <Move class="w-4 h-4" />
-      </IconButton>
-      <IconButton v-if="editMode" title="Todo löschen" class="flex-shrink-0 mr-1" @click.stop="$emit('delete-todo', todo)">
-        <Trash2 class="w-4 h-4" />
-      </IconButton>
+      <div v-if="editMode" class="flex justify-end gap-1 pt-1">
+        <IconButton
+          v-if="categories && categories.length > 1"
+          title="In andere Kategorie verschieben"
+          @click.stop="openMovePopup(todo)"
+        >
+          <Move class="w-4 h-4" />
+        </IconButton>
+        <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
+          <Trash2 class="w-4 h-4" />
+        </IconButton>
+      </div>
+      <div class="flex items-start gap-1">
+        <button v-if="!isTemplate && !editMode"
+                type="button"
+                class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
+                :title="todo.done ? 'Als offen markieren' : 'Als erledigt markieren'"
+                @click="$emit('toggle-todo', todo)">
+          <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
+          <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
+        </button>
+        <span class="flex-1 min-w-0 py-2 break-words"
+              :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
+          {{ todo.title }}
+        </span>
+      </div>
     </div>
   </div>
 
