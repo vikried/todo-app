@@ -11,9 +11,16 @@
         class="text-2xl font-bold border rounded px-2 py-1 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"
         @keyup.enter="saveListName"
         @keyup.escape="cancelEditListName"
-        @blur="saveListName"
       />
-      <IconButton v-if="editMode && !editingListName" title="Liste umbenennen" @click="startEditListName">
+      <template v-if="editMode && editingListName">
+        <IconButton title="Speichern" @click="saveListName">
+          <Check class="w-4 h-4" />
+        </IconButton>
+        <IconButton title="Abbrechen" @click="cancelEditListName">
+          <X class="w-4 h-4" />
+        </IconButton>
+      </template>
+      <IconButton v-else-if="editMode" title="Liste umbenennen" @click="startEditListName">
         <Pencil class="w-4 h-4" />
       </IconButton>
     </div>
@@ -230,7 +237,7 @@ const createCategoryAndAddToList = async(listId) => {
 }
 
 const createTodoAndAddToCategory = async(categoryId, newTodoName) => {
-  const data = { title: newTodoName};
+  const data = { title: newTodoName, todoListId: list.value.id };
   const createdTodo = await todoStore.addTodo(data);
   await categoryStore.addTodoToCategory(categoryId, createdTodo.id);
   loadCategories();

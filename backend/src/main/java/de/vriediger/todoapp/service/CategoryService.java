@@ -46,6 +46,7 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Todo not found"));
         category.getTodos().add(todo);
         todo.setCategory(category);
+        todo.setTodoList(category.getTodoList());
         categoryRepository.save(category);
     }
 

@@ -8,15 +8,24 @@
       class="flex-1 min-w-0 border rounded px-2 py-1 text-base font-normal dark:text-gray-100 dark:bg-gray-700"
       @keyup.enter="saveName"
       @keyup.escape="cancelEditName"
-      @blur="saveName"
     />
     <span class="flex items-center gap-1 flex-shrink-0">
-      <IconButton v-if="editMode && !editingName" title="Kategorie umbenennen" @click.stop="startEditName">
-        <Pencil class="w-4 h-4" />
-      </IconButton>
-      <IconButton v-if="editMode" title="Kategorie löschen" @click.stop="$emit('delete-category', category.id)">
-        <Trash2 class="w-4 h-4" />
-      </IconButton>
+      <template v-if="editMode && editingName">
+        <IconButton title="Speichern" @click.stop="saveName">
+          <Check class="w-4 h-4" />
+        </IconButton>
+        <IconButton title="Abbrechen" @click.stop="cancelEditName">
+          <X class="w-4 h-4" />
+        </IconButton>
+      </template>
+      <template v-else-if="editMode">
+        <IconButton title="Kategorie umbenennen" @click.stop="startEditName">
+          <Pencil class="w-4 h-4" />
+        </IconButton>
+        <IconButton title="Kategorie löschen" @click.stop="$emit('delete-category', category.id)">
+          <Trash2 class="w-4 h-4" />
+        </IconButton>
+      </template>
     </span>
   </h3>
   <div v-if="editMode">
@@ -31,7 +40,7 @@
   </p>
   <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
     <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
-         class="flex items-center gap-1 dark:bg-gray-700 flex-wrap">
+         class="flex items-center gap-1 dark:bg-gray-700">
       <button v-if="!isTemplate"
               type="button"
               class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
@@ -44,27 +53,52 @@
             :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
         {{ todo.title }}
       </span>
-      <select
+      <IconButton
         v-if="editMode && categories && categories.length > 1"
         title="In andere Kategorie verschieben"
-        class="flex-shrink-0 text-sm border rounded p-1 dark:text-gray-100 dark:bg-gray-700 max-w-[45%]"
-        :value="category.id"
-        @change="onMoveTodo(todo, $event.target.value)"
+        class="flex-shrink-0"
+        @click.stop="openMovePopup(todo)"
       >
-        <option v-for="target in categories" :key="target.id" :value="target.id">
-          {{ target.id === category.id ? '✓ ' + target.name : target.name }}
-        </option>
-      </select>
+        <Move class="w-4 h-4" />
+      </IconButton>
       <IconButton v-if="editMode" title="Todo löschen" class="flex-shrink-0 mr-1" @click.stop="$emit('delete-todo', todo)">
         <Trash2 class="w-4 h-4" />
       </IconButton>
+    </div>
+  </div>
+
+  <div
+    v-if="movingTodo"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+    @click.self="closeMovePopup"
+  >
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4 dark:bg-gray-900 dark:text-gray-100">
+      <h2 class="text-lg font-semibold mb-4 dark:text-gray-100 break-words">
+        „{{ movingTodo.title }}" verschieben nach:
+      </h2>
+      <ul class="mb-4 divide-y dark:divide-gray-700 border rounded dark:border-gray-700 overflow-hidden">
+        <li v-for="target in categories" :key="target.id">
+          <button
+            type="button"
+            class="w-full text-left px-3 py-2 flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="target.id === category.id"
+            @click="confirmMove(target.id)"
+          >
+            <span>{{ target.name }}</span>
+            <Check v-if="target.id === category.id" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          </button>
+        </li>
+      </ul>
+      <div class="flex justify-end">
+        <BaseButton variant="secondary" @click="closeMovePopup">Abbrechen</BaseButton>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, nextTick } from 'vue'
-import { Trash2, CheckCircle2, Circle, Pencil } from 'lucide-vue-next'
+import { Trash2, CheckCircle2, Circle, Pencil, Check, X, Move } from 'lucide-vue-next'
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 
@@ -117,10 +151,20 @@ const cancelEditName = () => {
   editingName.value = false;
 }
 
-const onMoveTodo = (todo, newCategoryId) => {
-  const targetId = Number(newCategoryId);
-  if (targetId === props.category.id) return;
-  emit('move-todo', todo, targetId);
+const movingTodo = ref(null);
+
+const openMovePopup = (todo) => {
+  movingTodo.value = todo;
+}
+
+const closeMovePopup = () => {
+  movingTodo.value = null;
+}
+
+const confirmMove = (targetCategoryId) => {
+  if (targetCategoryId === props.category.id || !movingTodo.value) return;
+  emit('move-todo', movingTodo.value, targetCategoryId);
+  closeMovePopup();
 }
 
 function sortTodos(todos) {
