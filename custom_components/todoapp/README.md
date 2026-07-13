@@ -44,8 +44,9 @@ Browser-Session gebunden, nicht dauerhaft adressierbar).
 
 Jede zugängliche Liste (eigene, geteilte, Templates) erscheint danach als
 eigene `todo.*`-Entity. Neue Listen, die später in der App angelegt
-werden, erscheinen automatisch nach dem nächsten Poll (alle 30 s). Wird
-eine Liste in der App gelöscht, wird die zugehörige Entity nicht
+werden, erscheinen automatisch nach dem nächsten Poll (alle 2 min – Änderungen
+über Assist selbst lösen unabhängig davon sofort einen gezielten Refresh
+aus). Wird eine Liste in der App gelöscht, wird die zugehörige Entity nicht
 automatisch entfernt, sondern nur als „nicht verfügbar" markiert.
 
 ## Bekannte Einschränkungen

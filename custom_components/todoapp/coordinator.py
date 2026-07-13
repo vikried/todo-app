@@ -15,7 +15,13 @@ from .api import TodoAppApiClient, TodoAppApiError, TodoAppAuthError
 
 _LOGGER = logging.getLogger(__name__)
 
-UPDATE_INTERVAL = timedelta(seconds=30)
+# Jede Änderung über Assist (Item hinzufügen/abhaken/löschen) löst ohnehin
+# sofort einen gezielten async_request_refresh() aus (siehe todo.py) - das
+# reguläre Polling muss also nur Änderungen abdecken, die außerhalb von HA
+# (z. B. über die Web-App) gemacht wurden. 30s erzeugte dauerhaft unnötige
+# Last (jeder Zyklus lädt alle Listen/Templates inkl. aller Kategorien und
+# Todos komplett neu).
+UPDATE_INTERVAL = timedelta(minutes=2)
 
 type TodoAppConfigEntry = ConfigEntry[TodoAppCoordinator]
 
