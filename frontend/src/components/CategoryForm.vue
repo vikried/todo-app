@@ -1,9 +1,23 @@
 <template>
-  <h3 class="font-semibold text-lg mb-2 dark:text-gray-100 flex items-center justify-between">
-    <span>{{ category.name }}</span>
-    <IconButton v-if="editMode" title="Kategorie löschen" @click.stop="$emit('delete-category', category.id)">
-      <Trash2 class="w-4 h-4" />
-    </IconButton>
+  <h3 class="font-semibold text-lg mb-2 dark:text-gray-100 flex items-center justify-between gap-2">
+    <span v-if="!editingName" class="flex-1 min-w-0 break-words">{{ category.name }}</span>
+    <input
+      v-else
+      ref="nameInput"
+      v-model="nameDraft"
+      class="flex-1 min-w-0 border rounded px-2 py-1 text-base font-normal dark:text-gray-100 dark:bg-gray-700"
+      @keyup.enter="saveName"
+      @keyup.escape="cancelEditName"
+      @blur="saveName"
+    />
+    <span class="flex items-center gap-1 flex-shrink-0">
+      <IconButton v-if="editMode && !editingName" title="Kategorie umbenennen" @click.stop="startEditName">
+        <Pencil class="w-4 h-4" />
+      </IconButton>
+      <IconButton v-if="editMode" title="Kategorie löschen" @click.stop="$emit('delete-category', category.id)">
+        <Trash2 class="w-4 h-4" />
+      </IconButton>
+    </span>
   </h3>
   <div v-if="editMode">
     <form @submit.prevent="onSubmitCreateTodo(category.id)" class="flex gap-2 mb-4">
@@ -17,7 +31,7 @@
   </p>
   <div v-else class="border rounded dark:border-gray-700 divide-y dark:divide-gray-700 overflow-hidden">
     <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
-         class="flex items-center gap-1 dark:bg-gray-700">
+         class="flex items-center gap-1 dark:bg-gray-700 flex-wrap">
       <button v-if="!isTemplate"
               type="button"
               class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
@@ -30,6 +44,17 @@
             :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
         {{ todo.title }}
       </span>
+      <select
+        v-if="editMode && categories && categories.length > 1"
+        title="In andere Kategorie verschieben"
+        class="flex-shrink-0 text-sm border rounded p-1 dark:text-gray-100 dark:bg-gray-700 max-w-[45%]"
+        :value="category.id"
+        @change="onMoveTodo(todo, $event.target.value)"
+      >
+        <option v-for="target in categories" :key="target.id" :value="target.id">
+          {{ target.id === category.id ? '✓ ' + target.name : target.name }}
+        </option>
+      </select>
       <IconButton v-if="editMode" title="Todo löschen" class="flex-shrink-0 mr-1" @click.stop="$emit('delete-todo', todo)">
         <Trash2 class="w-4 h-4" />
       </IconButton>
@@ -38,13 +63,14 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from 'vue'
-import { Trash2, CheckCircle2, Circle } from 'lucide-vue-next'
+import { ref, nextTick } from 'vue'
+import { Trash2, CheckCircle2, Circle, Pencil } from 'lucide-vue-next'
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 
-defineProps({
+const props = defineProps({
   category: {},
+  categories: { type: Array, default: () => [] },
   editMode: false,
   isTemplate: false
 });
@@ -53,7 +79,9 @@ const emit = defineEmits([
   'delete-category',
   'delete-todo',
   'toggle-todo',
-  'create-todo'
+  'create-todo',
+  'rename-category',
+  'move-todo'
 ]);
 
 const newTodoName = ref('');
@@ -62,6 +90,37 @@ const onSubmitCreateTodo = (categoryId) => {
   if (!newTodoName.value.trim()) return;
   emit('create-todo', categoryId, newTodoName.value);
   newTodoName.value = '';
+}
+
+const editingName = ref(false);
+const nameDraft = ref('');
+const nameInput = ref(null);
+
+const startEditName = async () => {
+  nameDraft.value = props.category.name;
+  editingName.value = true;
+  await nextTick();
+  nameInput.value?.focus();
+  nameInput.value?.select();
+}
+
+const saveName = () => {
+  if (!editingName.value) return;
+  editingName.value = false;
+  const trimmed = nameDraft.value.trim();
+  if (trimmed && trimmed !== props.category.name) {
+    emit('rename-category', props.category, trimmed);
+  }
+}
+
+const cancelEditName = () => {
+  editingName.value = false;
+}
+
+const onMoveTodo = (todo, newCategoryId) => {
+  const targetId = Number(newCategoryId);
+  if (targetId === props.category.id) return;
+  emit('move-todo', todo, targetId);
 }
 
 function sortTodos(todos) {

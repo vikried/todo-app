@@ -52,6 +52,7 @@ export const useTodoListStore = defineStore('todoList', {
         },
         async updateTodoList(todoList, data) {
             const response = await api.patch(`/lists/${todoList.id}`, data)
+            return response.data
         },
         async shareList(listId, username) {
             const response = await api.post(`/lists/${listId}/share`, { username })

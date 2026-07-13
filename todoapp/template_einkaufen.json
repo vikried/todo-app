@@ -1,0 +1,154 @@
+{
+  "categories": [
+    {
+      "name": "Obst",
+      "todos": [
+        "Äpfel",
+        "Bananen",
+        "Birnen",
+        "Trauben",
+        "Erdbeeren",
+        "Heidelbeeren",
+        "Himbeeren",
+        "Orangen",
+        "Mandarinen",
+        "Zitronen",
+        "Limetten",
+        "Kiwis",
+        "Mango",
+        "Ananas",
+        "Melone",
+        "Avocados"
+      ]
+    },
+    {
+      "name": "Gemüse",
+      "todos": [
+        "Tomaten",
+        "Gurken",
+        "Paprika",
+        "Karotten",
+        "Salat",
+        "Zwiebeln",
+        "Knoblauch",
+        "Kartoffeln",
+        "Brokkoli",
+        "Blumenkohl",
+        "Zucchini",
+        "Champignons",
+        "Spinat",
+        "Mais",
+        "Frühlingszwiebeln"
+      ]
+    },
+    {
+      "name": "Milchprodukte",
+      "todos": [
+        "Milch",
+        "Hafermilch / Pflanzendrink",
+        "Butter",
+        "Margarine",
+        "Joghurt",
+        "Quark",
+        "Frischkäse",
+        "Käse",
+        "Mozzarella",
+        "Parmesan",
+        "Sahne",
+        "Schmand",
+        "Crème fraîche",
+        "Eier"
+      ]
+    },
+    {
+      "name": "Fleisch",
+      "todos": [
+        "Hähnchenbrust",
+        "Hackfleisch",
+        "Rindersteak",
+        "Schweinefleisch",
+        "Putenbrust",
+        "Würstchen",
+        "Speck",
+        "Salami",
+        "Schinken",
+        "Aufschnitt"
+      ]
+    },
+    {
+      "name": "Backen & Kochen",
+      "todos": [
+        "Mehl",
+        "Zucker",
+        "Salz",
+        "Pfeffer",
+        "Gewürze",
+        "Öl",
+        "Essig",
+        "Tomatensoße"
+      ]
+    },
+    {
+      "name": "Brot & Getreide",
+      "todos": [
+        "Brot",
+        "Brötchen",
+        "Toast",
+        "Nudeln",
+        "Reis",
+        "Müsli",
+        "Haferflocken"
+      ]
+    },
+    {
+      "name": "Konserven & Vorräte",
+      "todos": [
+        "Konserven"
+      ]
+    },
+    {
+      "name": "Soßen & Aufstriche",
+      "todos": [
+        "Ketchup",
+        "Mayonnaise",
+        "Senf"
+      ]
+    },
+    {
+      "name": "Snacks & Süßigkeiten",
+      "todos": [
+        "Snacks",
+        "Schokolade"
+      ]
+    },
+    {
+      "name": "Getränke",
+      "todos": [
+        "Mineralwasser",
+        "Saft",
+        "Kaffee",
+        "Tee"
+      ]
+    },
+    {
+      "name": "Küchensachen",
+      "todos": [
+        "Küchenrolle",
+        "Toilettenpapier",
+        "Müllbeutel",
+        "Frischhaltefolie",
+        "Alufolie",
+        "Backpapier",
+        "Gefrierbeutel",
+        "Brotdosen",
+        "Wiederverschließbare Beutel",
+        "Spülmittel",
+        "Spülmaschinentabs",
+        "Schwämme",
+        "Spültücher",
+        "Geschirrtücher",
+        "Handseife"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,22 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4 dark:text-gray-100">Liste: {{ list?.name }}</h1>
+    <div class="flex items-center gap-2 mb-4">
+      <h1 v-if="!editingListName" class="text-2xl font-bold dark:text-gray-100 break-words">
+        Liste: {{ list?.name }}
+      </h1>
+      <input
+        v-else
+        ref="listNameInput"
+        v-model="listNameDraft"
+        class="text-2xl font-bold border rounded px-2 py-1 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"
+        @keyup.enter="saveListName"
+        @keyup.escape="cancelEditListName"
+        @blur="saveListName"
+      />
+      <IconButton v-if="editMode && !editingListName" title="Liste umbenennen" @click="startEditListName">
+        <Pencil class="w-4 h-4" />
+      </IconButton>
+    </div>
     <div class="flex items-center gap-2 mb-6 dark:text-gray-100">
       <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
         <SquarePen v-if="!editMode" class="w-5 h-5"/>
@@ -41,7 +57,18 @@
       </p>
 
       <div v-for="category in categories" :key="category.id" class="mb-6 border rounded p-3">
-        <CategoryForm :category="category" :editMode="editMode" :is-template="list?.template" @delete-category="askDeleteCategory" @delete-todo="askDeleteTodo" @toggle-todo="toggleTodoStatus" @create-todo="createTodoAndAddToCategory"/>
+        <CategoryForm
+          :category="category"
+          :categories="categories"
+          :editMode="editMode"
+          :is-template="list?.template"
+          @delete-category="askDeleteCategory"
+          @delete-todo="askDeleteTodo"
+          @toggle-todo="toggleTodoStatus"
+          @create-todo="createTodoAndAddToCategory"
+          @rename-category="renameCategory"
+          @move-todo="moveTodo"
+        />
       </div>
     </section>
   </div>
@@ -137,7 +164,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoListStore } from '@/store/todoListStore';
 import { useCategoryStore } from '@/store/categoryStore'
@@ -147,7 +174,7 @@ import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Check, Share2, X } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Check, Share2, X, Pencil } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
@@ -163,6 +190,10 @@ const newCategoryName = ref('');
 const loading = ref(true);
 
 const editMode = ref(false);
+
+const editingListName = ref(false);
+const listNameDraft = ref('');
+const listNameInput = ref(null);
 
 const showCreateListFromTemplatePopup = ref(false);
 const newListName = ref('');
@@ -245,6 +276,38 @@ const createListFromTemplate = async() => {
 
 const toggleEditMode = () => {
   editMode.value = !editMode.value;
+}
+
+const startEditListName = async () => {
+  listNameDraft.value = list.value.name;
+  editingListName.value = true;
+  await nextTick();
+  listNameInput.value?.focus();
+  listNameInput.value?.select();
+}
+
+const saveListName = async () => {
+  if (!editingListName.value) return;
+  editingListName.value = false;
+  const trimmed = listNameDraft.value.trim();
+  if (trimmed && trimmed !== list.value.name) {
+    const updated = await todoListStore.updateTodoList(list.value, { name: trimmed, template: list.value.template });
+    list.value.name = updated.name;
+  }
+}
+
+const cancelEditListName = () => {
+  editingListName.value = false;
+}
+
+const renameCategory = async (category, newName) => {
+  await categoryStore.updateCategory(category.id, { name: newName });
+  loadCategories();
+}
+
+const moveTodo = async (todo, newCategoryId) => {
+  await todoStore.updateTodo(todo, { ...todo, categoryId: newCategoryId });
+  loadCategories();
 }
 
 function openTemplatePopup(templateId) {

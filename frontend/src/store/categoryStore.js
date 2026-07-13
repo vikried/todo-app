@@ -26,6 +26,12 @@ export const useCategoryStore = defineStore('category', {
       },
       async addTodoToCategory(categoryId, todoId) {
           await api.put(`/categories/${categoryId}/todos`, { id: todoId })
+      },
+      async updateCategory(categoryId, data) {
+          const response = await api.patch(`/categories/${categoryId}`, data)
+          const idx = this.categories.findIndex(c => c.id === categoryId)
+          if (idx !== -1) this.categories[idx] = response.data
+          return response.data
       }
   }
 })
