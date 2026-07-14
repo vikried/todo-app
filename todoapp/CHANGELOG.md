@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.16
+
+- Buttons in der Bearbeiten-Leiste ragten auf schmalen Bildschirmen
+  (z. B. iPhone) rechts über den Viewport hinaus bzw. brachen zweizeilig
+  um, was beim Scrollen zu sichtbarem horizontalem Ruckeln führte.
+  Auf mobilen Screens werden jetzt nur noch die Icons angezeigt (mit
+  Tooltip/Screenreader-Label), Beschriftungen erscheinen erst ab
+  Tablet-/Desktop-Breite.
+
 ## 1.0.15
 
 - Beim Bearbeiten einer Liste blieb der „Fertig"-Button beim Scrollen
