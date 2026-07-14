@@ -18,8 +18,10 @@
       "name": "Schwangerschaft",
       "todos": [
         "Ausreichend Wasser & Snacks für unterwegs",
+        "Bauchgurt",
         "Bequeme Sandalen für geschwollene Füße",
         "Bequeme, weite Kleidung für warme Tage",
+        "Kissen 3x2 plus Wurst",
         "Kompressionsstrümpfe für lange Fahrt/Flug",
         "Schwangerschaftskissen (klein, für Auto/Flug)",
         "Sonnencreme LSF 50 fürs Gesicht (Pigmentflecken)",
@@ -34,23 +36,34 @@
         "Badesachen (mehrfach)",
         "Badeschuhe / Flip-Flops",
         "Bequeme Schuhe zum Laufen",
+        "Crox",
         "Ein warmer Pullover für kühle Abende",
         "Etwas Schickeres für ein Abendessen",
+        "Kleider",
         "Leichte Regenjacke",
         "Leichte, luftige Kleidung",
+        "Schlafsachen",
         "Sonnenbrille",
-        "Sonnenhut / Cap"
+        "Sonnenhut / Cap",
+        "Unterwäsche"
       ]
     },
     {
       "name": "Kleidung – Kind",
       "todos": [
         "Badesachen mit UV-Schutz",
+        "Badeschuhe",
         "Bequeme, feste Schuhe",
+        "Dünne lange Hosen",
+        "Dünne Pullover",
+        "Kleine Handtücher/ Mulltücher",
+        "Kurze Hosen",
         "Leichte Jacke für den Abend",
         "Regenjacke",
+        "Sandalen",
         "Schlafanzüge",
         "Sonnenhut mit Nackenschutz",
+        "T-shirts",
         "Wechselkleidung (reichlich einplanen)"
       ]
     },
@@ -60,9 +73,11 @@
         "Faltbarer Strandwindschutz",
         "Kühltasche mit Kühlakkus",
         "Leichte Strandtasche / Bollerwagen",
+        "Schrauben für Sonnenschirme",
         "Schwimmflügel oder Schwimmweste",
         "Sonnenschirm oder Strandmuschel",
         "Strandspielzeug (Eimer, Schaufel, Förmchen)",
+        "Strandstühle klappbar",
         "Strandtücher",
         "Wasserdichte Handytasche"
       ]
@@ -70,13 +85,19 @@
     {
       "name": "Für das Kind unterwegs",
       "todos": [
+        "Anti-Schwitz-Auflage",
         "Autositz (falls nicht im Mietwagen vorhanden)",
+        "Babyphone",
+        "Besteck, Geschirr",
         "Buggy, geeignet für Sand",
-        "Fläschchen / Becher",
-        "Lieblingskuscheltier & Lieblingsspielzeug",
+        "Inkontinenzmatte",
+        "Laufrad, Globber & Helm",
+        "Lieblingskuscheltier (Mimi) & Spielzeug",
         "Reisebett / Beistellbett",
         "Snacks für die Anreise",
+        "Trip Trap",
         "UV-Sonnenschutzzelt für den Strand",
+        "Wasserflaschen, wiederauffüllbar",
         "Windeln, Feuchttücher, Wickelunterlage"
       ]
     },
@@ -84,11 +105,18 @@
       "name": "Hygiene & Gesundheit",
       "todos": [
         "After-Sun-Lotion",
+        "Bettwäsche",
+        "Föhn",
+        "Handtücher",
         "Kleines Erste-Hilfe-Set",
+        "Kulturbeutel",
+        "Matratzen",
         "Mittel gegen Reiseübelkeit (kindgerecht)",
         "Mückenschutz",
         "Reiseapotheke (Pflaster, Fieberthermometer, Wund- & Brandsalbe)",
+        "Shampoo",
         "Sonnencreme hoher LSF für alle",
+        "Taschentücher",
         "Übliche Medikamente & Rezepte",
         "Zahnpflege-Set für alle"
       ]
@@ -97,11 +125,17 @@
       "name": "Sonstiges",
       "todos": [
         "Buch / Hörbuch für lange Fahrten",
+        "Essen für die Erwachsenen für die Fahrt",
+        "grüne Trinkflasche",
         "Insektenschutz-Armband für Kind",
+        "Kühlbox mit Lebensmitteln",
         "Ladekabel & Powerbank",
+        "Panzertape",
         "Picknickdecke",
         "Wäscheklammern / kleine Wäscheleine",
+        "Wasser für die Fahrt",
         "Wasserdichte Kamera / Handyhülle",
+        "Werkzeug",
         "Wiederverschließbare Beutel (nasse Sachen, Sand)"
       ]
     },
@@ -109,7 +143,6 @@
       "name": "Für den Hund",
       "todos": [
         "Aktuelle Zecken- & Wurmbehandlung",
-        "Aktuelles Foto vom Hund (falls er entläuft)",
         "Chip-Nummer notiert / Chip funktionsfähig",
         "Erste-Hilfe-Set für den Hund (inkl. Zeckenzange)",
         "EU-Heimtierausweis (Tollwutimpfung, gültig?)",
@@ -121,11 +154,40 @@
         "Kotbeutel",
         "Leine & Ersatzleine",
         "Lieblingsspielzeug & Leckerlis",
-        "Maulkorb (in Frankreich für gelistete Rassen Pflicht)",
-        "Sonnenschutz/Kühlmatte für heiße Tage",
+        "Medikamente",
         "Tierarzt-Kontakt am Urlaubsort recherchiert",
         "Transportbox oder Sicherheitsgurt fürs Auto",
         "Vorab geprüft: Strand-/Leinenregeln am Reiseziel"
+      ]
+    },
+    {
+      "name": "Bungalow",
+      "todos": [
+        "Alufolie",
+        "Brotdosen für Ausflüge",
+        "Essig",
+        "Flaschenöffner/ Korkenzieher",
+        "Gewürze (Salz, Pfeffer, ...)",
+        "Kaffee",
+        "Kaffevollautomat",
+        "Kindle",
+        "Klopapier",
+        "Knoblauchpresse",
+        "Küchenhandtücher",
+        "Küchenrolle",
+        "Kühlakkus",
+        "Mehrfachsteckdose",
+        "Milchaufschäumer",
+        "Müllbeutel",
+        "Öl",
+        "Scharfe Messer",
+        "Spiele für die Großen",
+        "Spüli",
+        "Spülmaschinentabs",
+        "Spülschwamm & Spülbürste",
+        "Teebeutel",
+        "Waschmittel (Waschmaschine)",
+        "Zucker für die Mama"
       ]
     }
   ]

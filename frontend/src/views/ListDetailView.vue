@@ -1,51 +1,53 @@
 <template xmlns="http://www.w3.org/1999/html">
   <div class="p-6">
-    <div class="flex items-center gap-2 mb-4">
-      <h1 v-if="!editingListName" class="text-2xl font-bold dark:text-gray-100 break-words">
-        Liste: {{ list?.name }}
-      </h1>
-      <input
-        v-else
-        ref="listNameInput"
-        v-model="listNameDraft"
-        class="text-2xl font-bold border rounded px-2 py-1 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"
-        @keyup.enter="saveListName"
-        @keyup.escape="cancelEditListName"
-      />
-      <template v-if="editMode && editingListName">
-        <IconButton title="Speichern" @click="saveListName">
-          <Check class="w-4 h-4" />
+    <div class="sticky top-0 z-20 bg-gray-50 dark:bg-gray-800 pb-3 mb-3 border-b dark:border-gray-700">
+      <div class="flex items-center gap-2 mb-4 pt-1">
+        <h1 v-if="!editingListName" class="text-2xl font-bold dark:text-gray-100 break-words">
+          Liste: {{ list?.name }}
+        </h1>
+        <input
+          v-else
+          ref="listNameInput"
+          v-model="listNameDraft"
+          class="text-2xl font-bold border rounded px-2 py-1 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"
+          @keyup.enter="saveListName"
+          @keyup.escape="cancelEditListName"
+        />
+        <template v-if="editMode && editingListName">
+          <IconButton title="Speichern" @click="saveListName">
+            <Check class="w-4 h-4" />
+          </IconButton>
+          <IconButton title="Abbrechen" @click="cancelEditListName">
+            <X class="w-4 h-4" />
+          </IconButton>
+        </template>
+        <IconButton v-else-if="editMode" title="Liste umbenennen" @click="startEditListName">
+          <Pencil class="w-4 h-4" />
         </IconButton>
-        <IconButton title="Abbrechen" @click="cancelEditListName">
-          <X class="w-4 h-4" />
-        </IconButton>
-      </template>
-      <IconButton v-else-if="editMode" title="Liste umbenennen" @click="startEditListName">
-        <Pencil class="w-4 h-4" />
-      </IconButton>
-    </div>
-    <div class="flex items-center gap-2 mb-6 dark:text-gray-100">
-      <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
-        <SquarePen v-if="!editMode" class="w-5 h-5"/>
-        <Check v-if="editMode" class="w-5 h-5"/>
-        {{ editMode ? 'Fertig' : 'Bearbeiten' }}
-      </BaseButton>
-      <BaseButton
-        v-if="list?.template"
-        class="flex items-center gap-2"
-        @click="openTemplatePopup(list.id)"
-      >
-        <FilePlus class="w-5 h-5" />
-        Liste erstellen
-      </BaseButton>
-      <BaseButton
-        v-if="isOwner"
-        class="flex items-center gap-2"
-        @click="openSharePopup"
-      >
-        <Share2 class="w-5 h-5" />
-        Teilen
-      </BaseButton>
+      </div>
+      <div class="flex items-center gap-2 dark:text-gray-100">
+        <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
+          <SquarePen v-if="!editMode" class="w-5 h-5"/>
+          <Check v-if="editMode" class="w-5 h-5"/>
+          {{ editMode ? 'Fertig' : 'Bearbeiten' }}
+        </BaseButton>
+        <BaseButton
+          v-if="list?.template"
+          class="flex items-center gap-2"
+          @click="openTemplatePopup(list.id)"
+        >
+          <FilePlus class="w-5 h-5" />
+          Liste erstellen
+        </BaseButton>
+        <BaseButton
+          v-if="isOwner"
+          class="flex items-center gap-2"
+          @click="openSharePopup"
+        >
+          <Share2 class="w-5 h-5" />
+          Teilen
+        </BaseButton>
+      </div>
     </div>
 
     <p v-if="loading" class="text-gray-500 dark:text-gray-400">Lade Liste …</p>

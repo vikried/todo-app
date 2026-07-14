@@ -1,6 +1,14 @@
 <template>
   <h3 class="font-semibold text-lg mb-2 dark:text-gray-100 flex items-center justify-between gap-2">
-    <span v-if="!editingName" class="flex-1 min-w-0 break-words">{{ category.name }}</span>
+    <button
+      v-if="!editingName"
+      type="button"
+      class="flex-1 min-w-0 flex items-center gap-1 text-left"
+      @click="isOpen = !isOpen"
+    >
+      <ChevronRight class="w-4 h-4 flex-shrink-0 transition-transform" :class="{ 'rotate-90': isOpen }" />
+      <span class="min-w-0 break-words">{{ category.name }}</span>
+    </button>
     <input
       v-else
       ref="nameInput"
@@ -28,47 +36,49 @@
       </template>
     </span>
   </h3>
-  <div v-if="editMode">
-    <form @submit.prevent="onSubmitCreateTodo(category.id)" class="flex gap-2 mb-4">
-      <input v-model="newTodoName" placeholder="Neues Todo" class="border rounded p-2 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"/>
-      <BaseButton type="submit">Hinzufügen</BaseButton>
-    </form>
-  </div>
+  <div v-if="isOpen">
+    <div v-if="editMode">
+      <form @submit.prevent="onSubmitCreateTodo(category.id)" class="flex gap-2 mb-4">
+        <input v-model="newTodoName" placeholder="Neues Todo" class="border rounded p-2 flex-1 min-w-0 dark:text-gray-100 dark:bg-gray-700"/>
+        <BaseButton type="submit">Hinzufügen</BaseButton>
+      </form>
+    </div>
 
-  <p v-if="!category.todos || category.todos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
-    Noch keine Todos in dieser Kategorie.
-  </p>
-  <div v-else class="border rounded dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-600 overflow-hidden">
-    <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
-         :draggable="editMode"
-         class="dark:bg-gray-700 px-1"
-         :class="{ 'cursor-grab': editMode }"
-         @dragstart="onDragStart(todo, $event)">
-      <div v-if="editMode" class="flex justify-end gap-1 pt-1">
-        <IconButton
-          v-if="categories && categories.length > 1"
-          title="In andere Kategorie verschieben"
-          @click.stop="openMovePopup(todo)"
-        >
-          <Move class="w-4 h-4" />
-        </IconButton>
-        <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
-          <Trash2 class="w-4 h-4" />
-        </IconButton>
-      </div>
-      <div class="flex items-start gap-1">
-        <button v-if="!isTemplate && !editMode"
-                type="button"
-                class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
-                :title="todo.done ? 'Als offen markieren' : 'Als erledigt markieren'"
-                @click="$emit('toggle-todo', todo)">
-          <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
-          <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
-        </button>
-        <span class="flex-1 min-w-0 py-2 break-words"
-              :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
-          {{ todo.title }}
-        </span>
+    <p v-if="!category.todos || category.todos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+      Noch keine Todos in dieser Kategorie.
+    </p>
+    <div v-else class="border rounded dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-600 overflow-hidden">
+      <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
+           :draggable="editMode"
+           class="dark:bg-gray-700 px-1"
+           :class="{ 'cursor-grab': editMode }"
+           @dragstart="onDragStart(todo, $event)">
+        <div v-if="editMode" class="flex justify-end gap-1 pt-1">
+          <IconButton
+            v-if="categories && categories.length > 1"
+            title="In andere Kategorie verschieben"
+            @click.stop="openMovePopup(todo)"
+          >
+            <Move class="w-4 h-4" />
+          </IconButton>
+          <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
+            <Trash2 class="w-4 h-4" />
+          </IconButton>
+        </div>
+        <div class="flex items-start gap-1">
+          <button v-if="!isTemplate && !editMode"
+                  type="button"
+                  class="flex-shrink-0 inline-flex items-center justify-center min-w-[44px] min-h-[44px]"
+                  :title="todo.done ? 'Als offen markieren' : 'Als erledigt markieren'"
+                  @click="$emit('toggle-todo', todo)">
+            <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
+            <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
+          </button>
+          <span class="flex-1 min-w-0 py-2 break-words"
+                :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
+            {{ todo.title }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -100,7 +110,7 @@
 
 <script setup>
 import { ref, nextTick } from 'vue'
-import { Trash2, CheckCircle2, Circle, Pencil, Check, X, Move } from 'lucide-vue-next'
+import { Trash2, CheckCircle2, Circle, Pencil, Check, X, Move, ChevronRight } from 'lucide-vue-next'
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 
@@ -121,6 +131,7 @@ const emit = defineEmits([
 ]);
 
 const newTodoName = ref('');
+const isOpen = ref(true);
 
 const onSubmitCreateTodo = (categoryId) => {
   if (!newTodoName.value.trim()) return;
