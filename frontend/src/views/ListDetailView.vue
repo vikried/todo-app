@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import { useTodoListStore } from '@/store/todoListStore';
 import { useCategoryStore } from '@/store/categoryStore'
@@ -446,9 +446,30 @@ const removeShare = async (username) => {
   list.value = await todoListStore.unshareList(list.value.id, username);
 }
 
+const POLL_INTERVAL_MS = 5000;
+let pollTimer = null;
+let polling = false;
+
+const pollForChanges = async () => {
+  if (polling) return;
+  polling = true;
+  try {
+    await Promise.all([loadList(), loadCategories()]);
+  } catch {
+    // stiller Poll-Fehlschlag, nächster Versuch folgt automatisch
+  } finally {
+    polling = false;
+  }
+}
+
 onMounted(async () => {
   loading.value = true;
   await Promise.all([loadList(), loadCategories()]);
   loading.value = false;
+  pollTimer = setInterval(pollForChanges, POLL_INTERVAL_MS);
+})
+
+onUnmounted(() => {
+  if (pollTimer) clearInterval(pollTimer);
 })
 </script>
