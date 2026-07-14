@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.15
+
+- Beim Bearbeiten einer Liste blieb der „Fertig"-Button beim Scrollen
+  ganz oben und war auf langen Listen erst nach Zurückscrollen wieder
+  erreichbar. Titel- und Buttonzeile sind jetzt fixiert (sticky), nur
+  die Kategorien scrollen darunter.
+- Kategorien lassen sich einzeln per Klick auf den Titel ein-/ausklappen
+  (Akkordion, standardmäßig alle ausgeklappt) sowie über einen neuen
+  Button „Alle ein-/ausklappen" gesammelt umschalten.
+- Todos lassen sich jetzt ebenfalls umbenennen (Stift-Icon im
+  Bearbeiten-Modus, analog zu Listen und Kategorien).
+
 ## 1.0.14
 
 - Seitenleisten-Panel war bisher nur für Home-Assistant-Admins sichtbar
