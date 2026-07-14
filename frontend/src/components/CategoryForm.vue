@@ -4,7 +4,7 @@
       v-if="!editingName"
       type="button"
       class="flex-1 min-w-0 flex items-center gap-1 text-left"
-      @click="isOpen = !isOpen"
+      @click="$emit('toggle-open')"
     >
       <ChevronRight class="w-4 h-4 flex-shrink-0 transition-transform" :class="{ 'rotate-90': isOpen }" />
       <span class="min-w-0 break-words">{{ category.name }}</span>
@@ -54,16 +54,29 @@
            :class="{ 'cursor-grab': editMode }"
            @dragstart="onDragStart(todo, $event)">
         <div v-if="editMode" class="flex justify-end gap-1 pt-1">
-          <IconButton
-            v-if="categories && categories.length > 1"
-            title="In andere Kategorie verschieben"
-            @click.stop="openMovePopup(todo)"
-          >
-            <Move class="w-4 h-4" />
-          </IconButton>
-          <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
-            <Trash2 class="w-4 h-4" />
-          </IconButton>
+          <template v-if="editingTodoId === todo.id">
+            <IconButton title="Speichern" @click.stop="saveTodoName(todo)">
+              <Check class="w-4 h-4" />
+            </IconButton>
+            <IconButton title="Abbrechen" @click.stop="cancelEditTodoName">
+              <X class="w-4 h-4" />
+            </IconButton>
+          </template>
+          <template v-else>
+            <IconButton title="Todo umbenennen" @click.stop="startEditTodoName(todo)">
+              <Pencil class="w-4 h-4" />
+            </IconButton>
+            <IconButton
+              v-if="categories && categories.length > 1"
+              title="In andere Kategorie verschieben"
+              @click.stop="openMovePopup(todo)"
+            >
+              <Move class="w-4 h-4" />
+            </IconButton>
+            <IconButton title="Todo löschen" @click.stop="$emit('delete-todo', todo)">
+              <Trash2 class="w-4 h-4" />
+            </IconButton>
+          </template>
         </div>
         <div class="flex items-start gap-1">
           <button v-if="!isTemplate && !editMode"
@@ -74,10 +87,19 @@
             <CheckCircle2 v-if="todo.done" class="w-5 h-5 text-green-600 dark:text-green-400" />
             <Circle v-else class="w-5 h-5 text-gray-400 dark:text-gray-500" />
           </button>
-          <span class="flex-1 min-w-0 py-2 break-words"
+          <span v-if="editingTodoId !== todo.id"
+                class="flex-1 min-w-0 py-2 break-words"
                 :class="todo.done && !isTemplate ? 'text-gray-400 dark:text-gray-500 line-through' : 'dark:text-gray-100'">
             {{ todo.title }}
           </span>
+          <input
+            v-else
+            :ref="el => setTodoNameInput(todo.id, el)"
+            v-model="todoNameDraft"
+            class="flex-1 min-w-0 border rounded px-2 py-1 my-1 dark:text-gray-100 dark:bg-gray-700"
+            @keyup.enter="saveTodoName(todo)"
+            @keyup.escape="cancelEditTodoName"
+          />
         </div>
       </div>
     </div>
@@ -118,7 +140,8 @@ const props = defineProps({
   category: {},
   categories: { type: Array, default: () => [] },
   editMode: false,
-  isTemplate: false
+  isTemplate: false,
+  isOpen: { type: Boolean, default: true }
 });
 
 const emit = defineEmits([
@@ -127,11 +150,12 @@ const emit = defineEmits([
   'toggle-todo',
   'create-todo',
   'rename-category',
-  'move-todo'
+  'rename-todo',
+  'move-todo',
+  'toggle-open'
 ]);
 
 const newTodoName = ref('');
-const isOpen = ref(true);
 
 const onSubmitCreateTodo = (categoryId) => {
   if (!newTodoName.value.trim()) return;
@@ -162,6 +186,39 @@ const saveName = () => {
 
 const cancelEditName = () => {
   editingName.value = false;
+}
+
+const editingTodoId = ref(null);
+const todoNameDraft = ref('');
+let todoNameInputEl = null;
+
+const setTodoNameInput = (todoId, el) => {
+  if (editingTodoId.value === todoId) {
+    todoNameInputEl = el;
+  }
+}
+
+const startEditTodoName = async (todo) => {
+  editingTodoId.value = todo.id;
+  todoNameDraft.value = todo.title;
+  await nextTick();
+  todoNameInputEl?.focus();
+  todoNameInputEl?.select();
+}
+
+const saveTodoName = (todo) => {
+  if (editingTodoId.value !== todo.id) return;
+  editingTodoId.value = null;
+  todoNameInputEl = null;
+  const trimmed = todoNameDraft.value.trim();
+  if (trimmed && trimmed !== todo.title) {
+    emit('rename-todo', todo, trimmed);
+  }
+}
+
+const cancelEditTodoName = () => {
+  editingTodoId.value = null;
+  todoNameInputEl = null;
 }
 
 const movingTodo = ref(null);

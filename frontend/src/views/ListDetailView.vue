@@ -47,6 +47,15 @@
           <Share2 class="w-5 h-5" />
           Teilen
         </BaseButton>
+        <BaseButton
+          v-if="categories && categories.length > 0"
+          class="flex items-center gap-2"
+          @click="toggleAllCategories"
+        >
+          <ChevronsDownUp v-if="allCategoriesOpen" class="w-5 h-5" />
+          <ChevronsUpDown v-else class="w-5 h-5" />
+          {{ allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen' }}
+        </BaseButton>
       </div>
     </div>
 
@@ -79,12 +88,15 @@
           :categories="categories"
           :editMode="editMode"
           :is-template="list?.template"
+          :is-open="isCategoryOpen(category.id)"
           @delete-category="askDeleteCategory"
           @delete-todo="askDeleteTodo"
           @toggle-todo="toggleTodoStatus"
           @create-todo="createTodoAndAddToCategory"
           @rename-category="renameCategory"
+          @rename-todo="renameTodo"
           @move-todo="moveTodo"
+          @toggle-open="toggleCategoryOpen(category.id)"
         />
       </div>
     </section>
@@ -201,7 +213,7 @@ import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Check, Share2, X, Pencil } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Check, Share2, X, Pencil, ChevronsDownUp, ChevronsUpDown } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
@@ -335,6 +347,37 @@ const renameCategory = async (category, newName) => {
 const moveTodo = async (todo, newCategoryId) => {
   await todoStore.updateTodo(todo, { ...todo, categoryId: newCategoryId });
   loadCategories();
+}
+
+const renameTodo = async (todo, newTitle) => {
+  await todoStore.updateTodo(todo, { ...todo, title: newTitle });
+  loadCategories();
+}
+
+const closedCategoryIds = ref(new Set());
+
+const isCategoryOpen = (categoryId) => !closedCategoryIds.value.has(categoryId);
+
+const toggleCategoryOpen = (categoryId) => {
+  const next = new Set(closedCategoryIds.value);
+  if (next.has(categoryId)) {
+    next.delete(categoryId);
+  } else {
+    next.add(categoryId);
+  }
+  closedCategoryIds.value = next;
+}
+
+const allCategoriesOpen = computed(() =>
+  !categories.value || categories.value.every(category => isCategoryOpen(category.id))
+);
+
+const toggleAllCategories = () => {
+  if (allCategoriesOpen.value) {
+    closedCategoryIds.value = new Set((categories.value || []).map(category => category.id));
+  } else {
+    closedCategoryIds.value = new Set();
+  }
 }
 
 const dragOverCategoryId = ref(null);
