@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.17
+
+- Änderungen an einer geteilten Liste durch andere Nutzer (z. B. Familien-
+  mitglieder) erschienen erst nach manuellem Neuladen der Seite. Die
+  Listenansicht fragt jetzt alle 5 Sekunden im Hintergrund still nach
+  Änderungen und aktualisiert sich automatisch, solange sie geöffnet ist.
+
 ## 1.0.16
 
 - Buttons in der Bearbeiten-Leiste ragten auf schmalen Bildschirmen
