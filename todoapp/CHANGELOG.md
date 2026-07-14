@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.14
+
+- Seitenleisten-Panel war bisher nur für Home-Assistant-Admins sichtbar
+  (`panel_admin` defaultet auf `true`). Jetzt `panel_admin: false`, damit
+  auch Nicht-Admin-Nutzer (z. B. Familienmitglieder) das Panel sehen.
+  Zugriff auf die App selbst bleibt weiterhin über den eigenen
+  Todo-App-Login (Benutzername/Passwort) geregelt, unabhängig vom
+  Home-Assistant-Nutzerkonto.
+
 ## 1.0.13
 
 - Trennlinie zwischen Todo-Items einer Kategorie sichtbar gemacht: Im

@@ -1,5 +1,5 @@
 name: Todo-App
-version: "1.0.13"
+version: "1.0.14"
 slug: todoapp
 description: Familien-Todo-App mit JWT-Auth, Kategorien, Listen-Vorlagen und Listen-Freigabe
 url: https://github.com/vikried/todo-app
@@ -12,6 +12,7 @@ ingress: true
 ingress_port: 80
 panel_icon: mdi:checkbox-marked-outline
 panel_title: Todo-App
+panel_admin: false
 watchdog: "tcp://[HOST]:80"
 ports:
   80/tcp: 8099
