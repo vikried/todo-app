@@ -25,36 +25,43 @@
           <Pencil class="w-4 h-4" />
         </IconButton>
       </div>
-      <div class="flex items-center gap-2 dark:text-gray-100">
-        <BaseButton class="flex items-center gap-2" @click="toggleEditMode">
+      <div class="flex flex-wrap items-center gap-2 dark:text-gray-100">
+        <BaseButton
+          class="flex items-center gap-2"
+          :title="editMode ? 'Fertig' : 'Bearbeiten'"
+          @click="toggleEditMode"
+        >
           <SquarePen v-if="!editMode" class="w-5 h-5"/>
           <Check v-if="editMode" class="w-5 h-5"/>
-          {{ editMode ? 'Fertig' : 'Bearbeiten' }}
+          <span class="hidden sm:inline">{{ editMode ? 'Fertig' : 'Bearbeiten' }}</span>
         </BaseButton>
         <BaseButton
           v-if="list?.template"
           class="flex items-center gap-2"
+          title="Liste erstellen"
           @click="openTemplatePopup(list.id)"
         >
           <FilePlus class="w-5 h-5" />
-          Liste erstellen
+          <span class="hidden sm:inline">Liste erstellen</span>
         </BaseButton>
         <BaseButton
           v-if="isOwner"
           class="flex items-center gap-2"
+          title="Teilen"
           @click="openSharePopup"
         >
           <Share2 class="w-5 h-5" />
-          Teilen
+          <span class="hidden sm:inline">Teilen</span>
         </BaseButton>
         <BaseButton
           v-if="categories && categories.length > 0"
           class="flex items-center gap-2"
+          :title="allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen'"
           @click="toggleAllCategories"
         >
           <ChevronsDownUp v-if="allCategoriesOpen" class="w-5 h-5" />
           <ChevronsUpDown v-else class="w-5 h-5" />
-          {{ allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen' }}
+          <span class="hidden sm:inline">{{ allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen' }}</span>
         </BaseButton>
       </div>
     </div>
