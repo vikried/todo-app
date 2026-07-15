@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.18
+
+- Neuer Button „Als Vorlage speichern" in der Listenansicht: Der aktuelle
+  Stand einer bestehenden Liste (Kategorien und Todos) lässt sich als
+  neue Vorlage sichern, ohne die Ursprungsliste zu verändern – z. B. um
+  eine bearbeitete Liste als wiederverwendbares Template festzuhalten.
+  Der Erledigt-Status wird in der neuen Vorlage zurückgesetzt.
+
 ## 1.0.17
 
 - Änderungen an einer geteilten Liste durch andere Nutzer (z. B. Familien-
