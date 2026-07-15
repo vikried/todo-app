@@ -26,6 +26,11 @@ export const useTodoListStore = defineStore('todoList', {
             const response = await api.post('/lists', { 'name': name, 'template': template })
             this.todoLists.push(response.data)
         },
+        async saveListAsTemplate(listId, name) {
+            const response = await api.post(`/lists/${listId}/save-as-template?name=${encodeURIComponent(name)}`)
+            this.todoLists.push(response.data)
+            return response.data
+        },
         async importTodoList(file, name, template) {
             const formData = new FormData()
             formData.append('file', file)

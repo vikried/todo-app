@@ -54,6 +54,15 @@
           <span class="hidden sm:inline">Teilen</span>
         </BaseButton>
         <BaseButton
+          v-if="!list?.template"
+          class="flex items-center gap-2"
+          title="Als Vorlage speichern"
+          @click="openSaveAsTemplatePopup"
+        >
+          <Copy class="w-5 h-5" />
+          <span class="hidden sm:inline">Als Vorlage speichern</span>
+        </BaseButton>
+        <BaseButton
           v-if="categories && categories.length > 0"
           class="flex items-center gap-2"
           :title="allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen'"
@@ -107,6 +116,38 @@
         />
       </div>
     </section>
+  </div>
+
+  <!-- Popup: Liste als Vorlage speichern -->
+  <div
+    v-if="showSaveAsTemplatePopup"
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-sm mx-4 dark:bg-gray-900 dark:text-gray-100">
+      <h2 class="text-lg font-semibold mb-4 dark:text-gray-100">Als Vorlage speichern</h2>
+
+      <p class="text-sm text-gray-500 dark:text-gray-400 mb-3">
+        Der aktuelle Stand dieser Liste wird als neue Vorlage gespeichert.
+        Die ursprüngliche Liste bleibt unverändert.
+      </p>
+
+      <label class="block mb-2 text-sm text-gray-600 dark:text-gray-100">Name der Vorlage:</label>
+      <input
+        v-model="newTemplateName"
+        type="text"
+        class="border w-full px-3 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300 dark:text-gray-100 dark:bg-gray-700"
+        placeholder="z.B. Wocheneinkauf"
+      />
+
+      <div class="flex justify-end gap-3 mt-4">
+        <BaseButton variant="secondary" @click="showSaveAsTemplatePopup = false">
+          Abbrechen
+        </BaseButton>
+        <BaseButton :disabled="!newTemplateName.trim()" @click="saveAsTemplate">
+          Speichern
+        </BaseButton>
+      </div>
+    </div>
   </div>
 
   <!-- Popup: Liste aus Template -->
@@ -220,7 +261,7 @@ import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Check, Share2, X, Pencil, ChevronsDownUp, ChevronsUpDown } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Check, Share2, X, Pencil, ChevronsDownUp, ChevronsUpDown, Copy } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
@@ -244,6 +285,9 @@ const listNameInput = ref(null);
 const showCreateListFromTemplatePopup = ref(false);
 const newListName = ref('');
 const selectedTemplateId = ref('');
+
+const showSaveAsTemplatePopup = ref(false);
+const newTemplateName = ref('');
 
 const showDeleteCategoryConfirm = ref(false);
 const pendingCategoryId = ref(null);
@@ -428,6 +472,18 @@ const cancelMoveViaDrop = () => {
 function openTemplatePopup(templateId) {
   selectedTemplateId.value = templateId;
   showCreateListFromTemplatePopup.value = true;
+}
+
+const openSaveAsTemplatePopup = () => {
+  newTemplateName.value = list.value?.name ? `${list.value.name} (Vorlage)` : '';
+  showSaveAsTemplatePopup.value = true;
+}
+
+const saveAsTemplate = async () => {
+  const trimmed = newTemplateName.value.trim();
+  if (!trimmed) return;
+  await todoListStore.saveListAsTemplate(list.value.id, trimmed);
+  showSaveAsTemplatePopup.value = false;
 }
 
 const openSharePopup = async () => {

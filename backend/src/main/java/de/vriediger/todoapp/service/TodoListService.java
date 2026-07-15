@@ -137,6 +137,47 @@ public class TodoListService {
     }
 
     @Transactional
+    public TodoListDto saveAsTemplate(Long listId, String name) {
+        TodoList sourceList = todoListRepository.findById(listId)
+                .orElseThrow(() -> new EntityNotFoundException("Liste nicht gefunden"));
+        requireAccess(sourceList, getCurrentUser());
+
+        TodoList newTemplate = new TodoList();
+        newTemplate.setName(name);
+        newTemplate.setTemplate(true);
+        newTemplate.setUser(getCurrentUser());
+
+        for (Category sourceCategory : sourceList.getCategories()) {
+            Category newCategory = new Category();
+            newCategory.setName(sourceCategory.getName());
+            newCategory.setTodoList(newTemplate);
+
+            for (Todo sourceTodo : sourceCategory.getTodos()) {
+                Todo newTodo = new Todo();
+                newTodo.setTitle(sourceTodo.getTitle());
+                newTodo.setDone(false);
+                newTodo.setCategory(newCategory);
+                newTodo.setTodoList(newTemplate);
+                newCategory.getTodos().add(newTodo);
+            }
+
+            newTemplate.getCategories().add(newCategory);
+        }
+
+        for (Todo sourceTodo : sourceList.getTodos()) {
+            if (sourceTodo.getCategory() == null) {
+                Todo newTodo = new Todo();
+                newTodo.setTitle(sourceTodo.getTitle());
+                newTodo.setDone(false);
+                newTodo.setTodoList(newTemplate);
+                newTemplate.getTodos().add(newTodo);
+            }
+        }
+
+        return todoListMapper.toDto(todoListRepository.save(newTemplate));
+    }
+
+    @Transactional
     public TodoListDto importFromFile(MultipartFile file, String name, boolean template) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Datei ist leer");

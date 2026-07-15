@@ -116,6 +116,26 @@ public class TodoListController {
     }
 
     @Operation(
+            summary = "Todo-Liste als Vorlage speichern",
+            description = "Dupliziert den aktuellen Stand einer Todo-Liste (Kategorien und Todos, "
+                    + "unerledigt) in eine neue Template-Liste. Die Ursprungsliste bleibt unverändert."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Vorlage erfolgreich erstellt",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TodoListDto.class))),
+            @ApiResponse(responseCode = "404", description = "Liste nicht gefunden", content = @Content)
+    })
+    @PostMapping("/{id}/save-as-template")
+    public ResponseEntity<TodoListDto> saveAsTemplate(
+            @PathVariable Long id, @RequestParam("name") String name) {
+        TodoListDto template = todoListService.saveAsTemplate(id, name);
+        return ResponseEntity
+                .created(URI.create("/api/lists/" + template.getId()))
+                .body(template);
+    }
+
+    @Operation(
             summary = "Todo-Liste aus CSV oder JSON importieren",
             description = "Erstellt eine neue Todo-Liste (standardmäßig als Template) aus einer hochgeladenen "
                     + "CSV- oder JSON-Datei. CSV erwartet die Spalten \"category\" (optional) und \"title\"; "
