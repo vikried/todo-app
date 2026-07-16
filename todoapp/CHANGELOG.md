@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.19
+
+- Neues Suchfeld in der Listenansicht: Filtert Todos nach Titel oder
+  Kategoriename. Passt der Suchbegriff auf eine Kategorie, bleiben alle
+  ihre Todos sichtbar; Kategorien selbst verschwinden beim Filtern nie,
+  nur die enthaltenen Todos werden ein-/ausgeblendet.
+- Erledigte Todos werden jetzt standardmäßig ausgeblendet. Über einen
+  neuen Button in der Bearbeiten-Leiste lassen sie sich wieder
+  ein-/ausblenden (gilt nicht für Templates).
+
 ## 1.0.18
 
 - Neuer Button „Als Vorlage speichern" in der Listenansicht: Der aktuelle

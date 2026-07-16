@@ -72,6 +72,34 @@
           <ChevronsUpDown v-else class="w-5 h-5" />
           <span class="hidden sm:inline">{{ allCategoriesOpen ? 'Alle einklappen' : 'Alle ausklappen' }}</span>
         </BaseButton>
+        <BaseButton
+          v-if="!list?.template"
+          class="flex items-center gap-2"
+          :title="hideCompleted ? 'Erledigte anzeigen' : 'Erledigte ausblenden'"
+          @click="hideCompleted = !hideCompleted"
+        >
+          <Eye v-if="hideCompleted" class="w-5 h-5" />
+          <EyeOff v-else class="w-5 h-5" />
+          <span class="hidden sm:inline">{{ hideCompleted ? 'Erledigte anzeigen' : 'Erledigte ausblenden' }}</span>
+        </BaseButton>
+      </div>
+      <div class="relative mt-3">
+        <Search class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Todos oder Kategorien durchsuchen…"
+          class="border w-full pl-9 pr-9 py-2 rounded focus:outline-none focus:ring focus:ring-blue-300 dark:text-gray-100 dark:bg-gray-700"
+        />
+        <button
+          v-if="searchQuery"
+          type="button"
+          class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+          title="Suche zurücksetzen"
+          @click="searchQuery = ''"
+        >
+          <X class="w-4 h-4" />
+        </button>
       </div>
     </div>
 
@@ -105,6 +133,8 @@
           :editMode="editMode"
           :is-template="list?.template"
           :is-open="isCategoryOpen(category.id)"
+          :search-query="searchQuery"
+          :hide-completed="hideCompleted"
           @delete-category="askDeleteCategory"
           @delete-todo="askDeleteTodo"
           @toggle-todo="toggleTodoStatus"
@@ -261,7 +291,7 @@ import CategoryForm from "@/components/CategoryForm.vue";
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
-import { FilePlus, SquarePen, Check, Share2, X, Pencil, ChevronsDownUp, ChevronsUpDown, Copy } from 'lucide-vue-next';
+import { FilePlus, SquarePen, Check, Share2, X, Pencil, ChevronsDownUp, ChevronsUpDown, Copy, Search, Eye, EyeOff } from 'lucide-vue-next';
 
 const todoListStore = useTodoListStore();
 const categoryStore = useCategoryStore();
@@ -404,6 +434,9 @@ const renameTodo = async (todo, newTitle) => {
   await todoStore.updateTodo(todo, { ...todo, title: newTitle });
   loadCategories();
 }
+
+const searchQuery = ref('');
+const hideCompleted = ref(true);
 
 const closedCategoryIds = ref(new Set());
 

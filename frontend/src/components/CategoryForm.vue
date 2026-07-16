@@ -47,8 +47,11 @@
     <p v-if="!category.todos || category.todos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
       Noch keine Todos in dieser Kategorie.
     </p>
+    <p v-else-if="visibleTodos.length === 0" class="text-sm text-gray-500 dark:text-gray-400">
+      Keine passenden Todos in dieser Kategorie.
+    </p>
     <div v-else class="border rounded dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-600 overflow-hidden">
-      <div v-for="todo in sortTodos(category.todos)" :key="todo.id"
+      <div v-for="todo in visibleTodos" :key="todo.id"
            :draggable="editMode"
            class="dark:bg-gray-700 px-1"
            :class="{ 'cursor-grab': editMode }"
@@ -131,7 +134,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { Trash2, CheckCircle2, Circle, Pencil, Check, X, Move, ChevronRight } from 'lucide-vue-next'
 import BaseButton from '@/components/BaseButton.vue'
 import IconButton from '@/components/IconButton.vue'
@@ -141,7 +144,9 @@ const props = defineProps({
   categories: { type: Array, default: () => [] },
   editMode: false,
   isTemplate: false,
-  isOpen: { type: Boolean, default: true }
+  isOpen: { type: Boolean, default: true },
+  searchQuery: { type: String, default: '' },
+  hideCompleted: { type: Boolean, default: false }
 });
 
 const emit = defineEmits([
@@ -254,4 +259,20 @@ function sortTodos(todos) {
     return titleA.localeCompare(titleB);
   });
 }
+
+const normalizedQuery = computed(() => props.searchQuery?.trim().toLowerCase() || '');
+const categoryNameMatches = computed(() =>
+  !normalizedQuery.value || props.category.name?.toLowerCase().includes(normalizedQuery.value)
+);
+
+const visibleTodos = computed(() => {
+  let todos = sortTodos(props.category.todos);
+  if (props.hideCompleted && !props.isTemplate) {
+    todos = todos.filter(todo => !todo.done);
+  }
+  if (normalizedQuery.value && !categoryNameMatches.value) {
+    todos = todos.filter(todo => todo.title?.toLowerCase().includes(normalizedQuery.value));
+  }
+  return todos;
+});
 </script>
