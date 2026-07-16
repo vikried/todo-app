@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.20
+
+- JWT-Gültigkeit von 24 Stunden auf 90 Tage erhöht (konfigurierbar über
+  `JWT_EXPIRATION_MS`), damit man sich nicht mehr täglich neu einloggen
+  muss, nachdem man bereits in Home Assistant angemeldet ist. Abmelden
+  und Login als anderer Nutzer funktionieren weiterhin wie gewohnt.
+
 ## 1.0.19
 
 - Neues Suchfeld in der Listenansicht: Filtert Todos nach Titel oder
