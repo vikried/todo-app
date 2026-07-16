@@ -53,6 +53,7 @@ automatisch entfernt, sondern nur als „nicht verfügbar" markiert.
 
 - Reine Fehlerdiagnose: Bei falschem Passwort/URL zeigt der Config-Flow
   einen Fehler; bei abgelaufener Sitzung meldet sich die Integration
-  automatisch neu an (JWT-Tokens laufen nach 24 h ab).
+  automatisch neu an (JWT-Tokens laufen standardmäßig nach 90 Tagen ab,
+  konfigurierbar über `JWT_EXPIRATION_MS`).
 - Kein Löschen/Umbenennen von Listen selbst über Assist, nur Items
   innerhalb einer Liste (Create/Update/Delete).

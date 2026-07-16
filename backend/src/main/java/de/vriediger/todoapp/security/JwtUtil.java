@@ -18,10 +18,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private static final long EXPIRATION_MS = 1000L * 60 * 60 * 24; // 24 Stunden
-
     @Value("${app.jwt.secret}")
     private String jwtSecret;
+
+    @Value("${app.jwt.expiration-ms}")
+    private long expirationMs;
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
@@ -33,7 +34,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
