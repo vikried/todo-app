@@ -117,9 +117,13 @@
       <p v-if="!categories || categories.length === 0" class="text-gray-500 dark:text-gray-400">
         Noch keine Kategorien in dieser Liste.
       </p>
+      <p v-else-if="!hasVisibleCategories" class="text-gray-500 dark:text-gray-400">
+        Keine offenen Todos gefunden.
+      </p>
 
       <div
         v-for="category in categories"
+        v-show="isCategoryVisible(category)"
         :key="category.id"
         class="mb-6 border rounded p-3"
         :class="{ 'ring-2 ring-blue-400 dark:ring-blue-500': editMode && dragOverCategoryId === category.id }"
@@ -437,6 +441,23 @@ const renameTodo = async (todo, newTitle) => {
 
 const searchQuery = ref('');
 const hideCompleted = ref(true);
+
+const isCategoryVisible = (category) => {
+  if (editMode.value) return true;
+  let todos = category.todos || [];
+  if (hideCompleted.value && !list.value?.template) {
+    todos = todos.filter(todo => !todo.done);
+  }
+  const query = searchQuery.value.trim().toLowerCase();
+  if (query && !category.name?.toLowerCase().includes(query)) {
+    todos = todos.filter(todo => todo.title?.toLowerCase().includes(query));
+  }
+  return todos.length > 0;
+}
+
+const hasVisibleCategories = computed(() =>
+  (categories.value || []).some(category => isCategoryVisible(category))
+);
 
 const closedCategoryIds = ref(new Set());
 
