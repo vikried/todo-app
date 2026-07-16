@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.21
+
+- Kategorien ohne sichtbare Todos werden jetzt ausgeblendet, statt leer
+  angezeigt zu werden: Wirkt beim Ausblenden erledigter Todos (Kategorie
+  verschwindet, wenn alle ihre Todos erledigt sind) und bei der Suche
+  (Kategorie verschwindet, wenn nichts zum Suchbegriff passt). Im
+  Bearbeiten-Modus bleiben weiterhin alle Kategorien sichtbar, damit
+  z. B. Todos zu einer aktuell leeren Kategorie hinzugefügt werden können.
+
 ## 1.0.20
 
 - JWT-Gültigkeit von 24 Stunden auf 90 Tage erhöht (konfigurierbar über
