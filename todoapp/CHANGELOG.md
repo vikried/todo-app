@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.22
+
+- Beim Umbenennen von Listen, Kategorien und Todos wurde der gesamte
+  Text im Eingabefeld automatisch markiert. Auf mobilen Geräten ließ
+  sich der Cursor dadurch nur per Ziehen der Auswahl-Handles an die
+  richtige Stelle bringen. Jetzt steht der Cursor beim Antippen einfach
+  an der gewünschten Position, ohne dass der Text markiert wird.
+
 ## 1.0.21
 
 - Kategorien ohne sichtbare Todos werden jetzt ausgeblendet, statt leer
