@@ -177,7 +177,6 @@ const startEditName = async () => {
   editingName.value = true;
   await nextTick();
   nameInput.value?.focus();
-  nameInput.value?.select();
 }
 
 const saveName = () => {
@@ -208,7 +207,6 @@ const startEditTodoName = async (todo) => {
   todoNameDraft.value = todo.title;
   await nextTick();
   todoNameInputEl?.focus();
-  todoNameInputEl?.select();
 }
 
 const saveTodoName = (todo) => {

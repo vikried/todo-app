@@ -407,7 +407,6 @@ const startEditListName = async () => {
   editingListName.value = true;
   await nextTick();
   listNameInput.value?.focus();
-  listNameInput.value?.select();
 }
 
 const saveListName = async () => {
