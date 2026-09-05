@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.23
+
+- Erster Schritt Richtung Offline-Nutzung (nur Lesen): Zuletzt geladene
+  Listen, Kategorien und Todos bleiben jetzt auch ohne Internet­verbindung
+  sichtbar (lokal im Browser zwischengespeichert), inklusive Hinweis-
+  Banner "Offline – zeigt zuletzt gespeicherten Stand". Bearbeiten ist
+  offline weiterhin nicht möglich, das folgt in einem späteren Schritt.
+  Für zuverlässiges Offline-Verhalten die App über den Direkt-Port
+  (nicht über die Sidebar) als Homescreen-Icon installieren, siehe
+  `ports_description` weiter unten.
+
 ## 1.0.22
 
 - Beim Umbenennen von Listen, Kategorien und Todos wurde der gesamte
