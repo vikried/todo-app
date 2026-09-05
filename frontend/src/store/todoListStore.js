@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import api from '@/api.js'
+import api, { isNetworkError } from '@/api.js'
+import * as offlineDb from '@/offline/db.js'
 
 export const useTodoListStore = defineStore('todoList', {
     state: () => ({
@@ -8,12 +9,24 @@ export const useTodoListStore = defineStore('todoList', {
     }),
     actions: {
         async fetchTodoLists() {
-            const response = await api.get('/lists')
-            this.todoLists = response.data
+            try {
+                const response = await api.get('/lists')
+                this.todoLists = response.data
+                offlineDb.putLists(response.data)
+            } catch (error) {
+                if (!isNetworkError(error)) throw error
+                this.todoLists = (await offlineDb.getAllLists()).filter(l => !l.template)
+            }
         },
         async fetchTemplates() {
-            const response = await api.get('/lists/templates')
-            this.todoLists = response.data
+            try {
+                const response = await api.get('/lists/templates')
+                this.todoLists = response.data
+                offlineDb.putLists(response.data)
+            } catch (error) {
+                if (!isNetworkError(error)) throw error
+                this.todoLists = (await offlineDb.getAllLists()).filter(l => l.template)
+            }
         },
         async createListFormTemplate(templateId, newListName) {
             const response = await api.post(`/lists/from-template/${templateId}?newListName=${newListName}`)
@@ -48,9 +61,18 @@ export const useTodoListStore = defineStore('todoList', {
             }
 
             // Wenn nicht im Store, dann vom Backend holen
-            const res = await api.get(`/lists/${id}`)
-            this.selectedList = res.data
-            return res.data
+            try {
+                const res = await api.get(`/lists/${id}`)
+                this.selectedList = res.data
+                offlineDb.putLists([res.data])
+                return res.data
+            } catch (error) {
+                if (!isNetworkError(error)) throw error
+                const cached = await offlineDb.getList(id)
+                if (!cached) throw error
+                this.selectedList = cached
+                return cached
+            }
         },
         async addCategoryToTodoList(listId, categoryId) {
             await api.put(`/lists/${listId}/categories`, { id: categoryId })

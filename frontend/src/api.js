@@ -38,4 +38,12 @@ api.interceptors.response.use(
   }
 );
 
+// Kein error.response bedeutet, dass der Request den Server nie erreicht hat
+// (offline, DNS-Fehler, Verbindung abgelehnt, Timeout) - im Unterschied zu
+// einem echten API-Fehler (404, 403, Validierung), der ganz normal weiter
+// angezeigt werden soll statt auf zwischengespeicherte Daten auszuweichen.
+export function isNetworkError(error) {
+  return !error?.response;
+}
+
 export default api;

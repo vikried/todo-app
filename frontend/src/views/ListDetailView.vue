@@ -560,7 +560,7 @@ let pollTimer = null;
 let polling = false;
 
 const pollForChanges = async () => {
-  if (polling) return;
+  if (polling || !navigator.onLine) return;
   polling = true;
   try {
     await Promise.all([loadList(), loadCategories()]);
