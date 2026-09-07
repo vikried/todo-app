@@ -1,8 +1,12 @@
 import { ref, onMounted, onUnmounted } from 'vue'
+import { triggerReplay } from '@/offline/outboxReplay.js'
 
 const isOnline = ref(navigator.onLine)
 
-const setOnline = () => { isOnline.value = true }
+const setOnline = () => {
+  isOnline.value = true
+  triggerReplay()
+}
 const setOffline = () => { isOnline.value = false }
 
 let listenerCount = 0

@@ -3,12 +3,19 @@ import App from './App.vue'
 import router from './router'
 import { createPinia } from 'pinia'
 import { appBasePath } from './api.js'
+import { triggerReplay } from './offline/outboxReplay.js'
 import './style.css'
 
 createApp(App)
   .use(router)
   .use(createPinia())
   .mount('#app')
+
+// Falls beim Start bereits online eine Restqueue von der letzten Sitzung
+// übrig ist (App wurde offline geschlossen, bevor sie je wieder online war).
+if (navigator.onLine) {
+  triggerReplay()
+}
 
 // Service Worker nur registrieren, wenn die App unter der Domain-Wurzel läuft
 // (Docker-Compose / Direkt-Port) - nie unter dem dynamischen Home-Assistant-

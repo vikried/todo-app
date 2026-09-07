@@ -341,14 +341,25 @@ const loadList = async() => {
   list.value = await todoListStore.findListById(listId);
 }
 
+// Mehrere Offline-Mutationen hintereinander lösen jeweils ihren eigenen,
+// nicht abgewarteten loadCategories()-Aufruf aus. Da Promises nicht
+// garantiert in Aufrufreihenfolge auflösen, würde ohne diese Absicherung
+// ein älterer, aber später auflösender Aufruf das Ergebnis eines neueren
+// überschreiben - Sequenznummer verwirft veraltete Antworten.
+let categoriesRequestSeq = 0;
+
 const loadCategories = async() => {
-  categories.value = await categoryStore.findCategoriesByList(listId);
+  const requestId = ++categoriesRequestSeq;
+  const result = await categoryStore.findCategoriesByList(listId);
+  if (requestId === categoriesRequestSeq) {
+    categories.value = result;
+  }
 }
 
 const createCategoryAndAddToList = async(listId) => {
   if (!newCategoryName.value) return;
   const createdCategory = await categoryStore.addCategory(newCategoryName.value);
-  await todoListStore.addCategoryToTodoList(listId, createdCategory.id);
+  await todoListStore.addCategoryToTodoList(listId, createdCategory);
   newCategoryName.value = '';
   loadCategories();
 }
@@ -356,7 +367,7 @@ const createCategoryAndAddToList = async(listId) => {
 const createTodoAndAddToCategory = async(categoryId, newTodoName) => {
   const data = { title: newTodoName, todoListId: list.value.id };
   const createdTodo = await todoStore.addTodo(data);
-  await categoryStore.addTodoToCategory(categoryId, createdTodo.id);
+  await categoryStore.addTodoToCategory(categoryId, createdTodo, list.value.id);
   loadCategories();
 }
 
@@ -367,14 +378,14 @@ const askDeleteCategory = (categoryId) => {
 
 const confirmDeleteCategory = async() => {
   if (pendingCategoryId.value == null) return;
-  await categoryStore.deleteCategory(pendingCategoryId.value);
+  await categoryStore.deleteCategory(pendingCategoryId.value, list.value.id);
   showDeleteCategoryConfirm.value = false;
   pendingCategoryId.value = null;
   loadCategories();
 }
 
 const toggleTodoStatus = async(todo) => {
-  await todoStore.updateTodo(todo, {...todo, done: !todo.done});
+  await todoStore.updateTodo(todo, {...todo, done: !todo.done}, list.value.id);
   loadCategories();
 }
 
@@ -385,7 +396,7 @@ const askDeleteTodo = (todo) => {
 
 const confirmDeleteTodo = async() => {
   if (!pendingTodo.value) return;
-  await todoStore.deleteTodo(pendingTodo.value.id);
+  await todoStore.deleteTodo(pendingTodo.value.id, list.value.id);
   showDeleteTodoConfirm.value = false;
   pendingTodo.value = null;
   loadCategories();
@@ -424,17 +435,17 @@ const cancelEditListName = () => {
 }
 
 const renameCategory = async (category, newName) => {
-  await categoryStore.updateCategory(category.id, { name: newName });
+  await categoryStore.updateCategory(category.id, { name: newName }, list.value.id);
   loadCategories();
 }
 
 const moveTodo = async (todo, newCategoryId) => {
-  await todoStore.updateTodo(todo, { ...todo, categoryId: newCategoryId });
+  await todoStore.updateTodo(todo, { ...todo, categoryId: newCategoryId }, list.value.id);
   loadCategories();
 }
 
 const renameTodo = async (todo, newTitle) => {
-  await todoStore.updateTodo(todo, { ...todo, title: newTitle });
+  await todoStore.updateTodo(todo, { ...todo, title: newTitle }, list.value.id);
   loadCategories();
 }
 

@@ -33,22 +33,75 @@ export const useCategoryStore = defineStore('category', {
           }
       },
       async addCategory(name) {
-          const response = await api.post('/categories', { name: name })
-          this.categories.push(response.data)
-          return response.data
+          try {
+              const response = await api.post('/categories', { name: name })
+              this.categories.push(response.data)
+              return response.data
+          } catch (error) {
+              if (!isNetworkError(error)) throw error
+              const optimisticCategory = { id: `temp-${crypto.randomUUID()}`, name, todos: [] }
+              await offlineDb.enqueueOutboxEntry({
+                  op: 'createCategory',
+                  tempId: optimisticCategory.id,
+                  targetId: optimisticCategory.id,
+                  payload: { name },
+                  listId: null
+              })
+              return optimisticCategory
+          }
       },
-      async deleteCategory(categoryId) {
-          await api.delete(`/categories/${categoryId}`)
-          this.categories = this.categories.filter(c => c.id !== categoryId)
+      async deleteCategory(categoryId, listId) {
+          try {
+              await api.delete(`/categories/${categoryId}`)
+              this.categories = this.categories.filter(c => c.id !== categoryId)
+          } catch (error) {
+              if (!isNetworkError(error)) throw error
+              await offlineDb.enqueueOutboxEntry({ op: 'deleteCategory', targetId: categoryId, payload: null, listId })
+              if (listId) {
+                  await offlineDb.mutateCategoriesForList(listId, categories =>
+                      categories.filter(c => c.id !== categoryId)
+                  )
+              }
+          }
       },
-      async addTodoToCategory(categoryId, todoId) {
-          await api.put(`/categories/${categoryId}/todos`, { id: todoId })
+      async addTodoToCategory(categoryId, todo, listId) {
+          try {
+              await api.put(`/categories/${categoryId}/todos`, { id: todo.id })
+          } catch (error) {
+              if (!isNetworkError(error)) throw error
+              await offlineDb.enqueueOutboxEntry({
+                  op: 'linkTodoToCategory',
+                  targetId: categoryId,
+                  payload: { id: todo.id },
+                  listId
+              })
+              if (listId) {
+                  await offlineDb.mutateCategoriesForList(listId, categories => {
+                      const category = categories.find(c => c.id === categoryId)
+                      if (category) category.todos = [...(category.todos || []), { ...todo, categoryId }]
+                      return categories
+                  })
+              }
+          }
       },
-      async updateCategory(categoryId, data) {
-          const response = await api.patch(`/categories/${categoryId}`, data)
-          const idx = this.categories.findIndex(c => c.id === categoryId)
-          if (idx !== -1) this.categories[idx] = response.data
-          return response.data
+      async updateCategory(categoryId, data, listId) {
+          try {
+              const response = await api.patch(`/categories/${categoryId}`, data)
+              const idx = this.categories.findIndex(c => c.id === categoryId)
+              if (idx !== -1) this.categories[idx] = response.data
+              return response.data
+          } catch (error) {
+              if (!isNetworkError(error)) throw error
+              await offlineDb.enqueueOutboxEntry({ op: 'updateCategory', targetId: categoryId, payload: data, listId })
+              if (listId) {
+                  await offlineDb.mutateCategoriesForList(listId, categories => {
+                      const category = categories.find(c => c.id === categoryId)
+                      if (category) Object.assign(category, data)
+                      return categories
+                  })
+              }
+              return { id: categoryId, ...data }
+          }
       }
   }
 })

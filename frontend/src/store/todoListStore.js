@@ -74,12 +74,32 @@ export const useTodoListStore = defineStore('todoList', {
                 return cached
             }
         },
-        async addCategoryToTodoList(listId, categoryId) {
-            await api.put(`/lists/${listId}/categories`, { id: categoryId })
+        async addCategoryToTodoList(listId, category) {
+            try {
+                await api.put(`/lists/${listId}/categories`, { id: category.id })
+            } catch (error) {
+                if (!isNetworkError(error)) throw error
+                await offlineDb.enqueueOutboxEntry({
+                    op: 'linkCategoryToList',
+                    targetId: listId,
+                    payload: { id: category.id },
+                    listId
+                })
+                await offlineDb.mutateCategoriesForList(listId, categories => [...categories, category])
+            }
         },
         async updateTodoList(todoList, data) {
-            const response = await api.patch(`/lists/${todoList.id}`, data)
-            return response.data
+            try {
+                const response = await api.patch(`/lists/${todoList.id}`, data)
+                return response.data
+            } catch (error) {
+                if (!isNetworkError(error)) throw error
+                await offlineDb.enqueueOutboxEntry({ op: 'updateList', targetId: todoList.id, payload: data, listId: todoList.id })
+                const cached = await offlineDb.getList(todoList.id)
+                const updated = { ...(cached || todoList), ...data }
+                await offlineDb.putLists([updated])
+                return updated
+            }
         },
         async shareList(listId, username) {
             const response = await api.post(`/lists/${listId}/share`, { username })

@@ -1,13 +1,18 @@
 import { openDB } from 'idb'
 
 const DB_NAME = 'todoapp-offline'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
-  upgrade(db) {
-    db.createObjectStore('lists', { keyPath: 'id' })
-    db.createObjectStore('categoriesByList')
-    db.createObjectStore('meta')
+  upgrade(db, oldVersion) {
+    if (oldVersion < 1) {
+      db.createObjectStore('lists', { keyPath: 'id' })
+      db.createObjectStore('categoriesByList')
+      db.createObjectStore('meta')
+    }
+    if (oldVersion < 2) {
+      db.createObjectStore('outbox', { keyPath: 'seq', autoIncrement: true })
+    }
   }
 })
 
@@ -54,4 +59,49 @@ export async function getCategoriesForList(listId) {
 export async function getLastSyncedAt() {
   const db = await dbPromise
   return db.get('meta', 'lastSyncedAt')
+}
+
+// Liest+schreibt die Kategorien einer Liste im Cache und spiegelt das
+// Ergebnis zusätzlich in lists[listId].categories, damit beide Cache-
+// Stellen (Listenübersicht und Listendetail) konsistent bleiben. mutatorFn
+// bekommt das aktuelle Kategorien-Array und gibt das neue zurück (oder
+// mutiert es in-place und gibt nichts zurück).
+export async function mutateCategoriesForList(listId, mutatorFn) {
+  const db = await dbPromise
+  const tx = db.transaction(['categoriesByList', 'lists', 'meta'], 'readwrite')
+  const key = Number(listId)
+  let categories = (await tx.objectStore('categoriesByList').get(key)) || []
+  categories = mutatorFn(categories) || categories
+  tx.objectStore('categoriesByList').put(categories, key)
+  const list = await tx.objectStore('lists').get(key)
+  if (list) {
+    list.categories = categories
+    tx.objectStore('lists').put(list)
+  }
+  tx.objectStore('meta').put(new Date().toISOString(), 'lastSyncedAt')
+  await tx.done
+  return categories
+}
+
+// Outbox: Warteschlange für Änderungen, die offline vorgenommen wurden und
+// bei Wiederverbindung nachgeholt werden müssen. autoIncrement auf "seq"
+// liefert kostenlos eine stabile FIFO-Reihenfolge zum Abspielen.
+export async function enqueueOutboxEntry(entry) {
+  const db = await dbPromise
+  return db.add('outbox', { ...entry, createdAt: new Date().toISOString() })
+}
+
+export async function getOutboxEntries() {
+  const db = await dbPromise
+  return db.getAll('outbox')
+}
+
+export async function deleteOutboxEntry(seq) {
+  const db = await dbPromise
+  return db.delete('outbox', seq)
+}
+
+export async function getOutboxCount() {
+  const db = await dbPromise
+  return db.count('outbox')
 }
