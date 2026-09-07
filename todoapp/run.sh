@@ -19,6 +19,23 @@ DB_PASSWORD=$(jq -r '.db_password' "$OPTIONS_FILE")
 JWT_SECRET=$(jq -r '.jwt_secret' "$OPTIONS_FILE")
 CORS_ALLOWED_ORIGINS=$(jq -r '.cors_allowed_origins // ""' "$OPTIONS_FILE")
 
+# Es gibt bewusst keinen funktionierenden Default für db_password/jwt_secret
+# (siehe config.yaml) - ein leeres, zu kurzes oder noch von einer alten
+# Add-on-Version übernommenes Default-Geheimnis lässt das Add-on hier hart
+# fehlschlagen, statt unbemerkt mit einem unsicheren Wert zu laufen. Die
+# harte Ablehnung der früheren Default-Strings schützt auch Bestandsinstallationen,
+# deren options.json diese Werte noch von vor diesem Fix enthält.
+if [ -z "$DB_PASSWORD" ] || [ "$DB_PASSWORD" = "change-me" ]; then
+    echo "[todoapp] FEHLER: db_password ist nicht gesetzt (oder noch der alte Standardwert 'change-me')."
+    echo "[todoapp] Bitte in der Add-on-Konfiguration ein eigenes Passwort vergeben."
+    exit 1
+fi
+if [ ${#JWT_SECRET} -lt 32 ] || [ "$JWT_SECRET" = "change-me-change-me-change-me-change-me" ]; then
+    echo "[todoapp] FEHLER: jwt_secret ist nicht gesetzt, kürzer als 32 Zeichen oder noch der alte Standardwert."
+    echo "[todoapp] Bitte in der Add-on-Konfiguration ein zufälliges Secret mit mindestens 32 Zeichen vergeben."
+    exit 1
+fi
+
 PGDATA=/data/pgdata
 PGBIN=$(dirname "$(find /usr/lib/postgresql -maxdepth 3 -name initdb | head -n1)")
 

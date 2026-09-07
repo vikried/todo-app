@@ -11,7 +11,9 @@ kein Port-Forwarding nötig.
 1. **Einstellungen → Add-ons → Add-on Store → ⋮ (oben rechts) → Repositories**
    und `https://github.com/vikried/todo-app` hinzufügen.
 2. „Todo-App" in der Liste suchen und installieren.
-3. Unter dem Reiter **Konfiguration** die Optionen setzen (siehe unten) und speichern.
+3. Unter dem Reiter **Konfiguration** mindestens `db_password` und `jwt_secret`
+   setzen (siehe unten) und speichern – ohne diese beiden startet das Add-on
+   nicht.
 4. Add-on **starten**. Beim allerersten Start wird das Image lokal gebaut
    (Maven- + npm-Build) – das kann je nach Hardware (z. B. Raspberry Pi) einige
    Minuten dauern. Fortschritt ist im Reiter **Log** sichtbar.
@@ -22,9 +24,14 @@ kein Port-Forwarding nötig.
 
 | Option | Beschreibung |
 |---|---|
-| `db_name`, `db_user`, `db_password` | Zugangsdaten für die interne PostgreSQL-Datenbank. `db_password` unbedingt ändern. |
-| `jwt_secret` | Signaturschlüssel für JWT-Tokens, **mindestens 32 Zeichen**. Unbedingt ändern und geheim halten – jeder mit diesem Schlüssel kann gültige Tokens fälschen. |
+| `db_name`, `db_user`, `db_password` | Zugangsdaten für die interne PostgreSQL-Datenbank. `db_password` ist standardmäßig leer und **muss** gesetzt werden. |
+| `jwt_secret` | Signaturschlüssel für JWT-Tokens, **mindestens 32 Zeichen**, geheim halten – jeder mit diesem Schlüssel kann gültige Tokens fälschen. Standardmäßig leer und **muss** gesetzt werden. |
 | `cors_allowed_origins` | Nur nötig, wenn die App zusätzlich außerhalb von Ingress (z. B. per freigegebenem Port) unter einer eigenen Origin aufgerufen wird. Kommagetrennte Liste, sonst leer lassen. |
+
+`db_password` und `jwt_secret` haben bewusst **keinen funktionierenden Default**
+(kein "change-me" o. ä.) – das Add-on bricht den Start mit einer klaren
+Fehlermeldung im Log ab, wenn eines der beiden fehlt oder `jwt_secret` kürzer
+als 32 Zeichen ist, statt unbemerkt mit einem unsicheren Wert zu laufen.
 
 Nach dem Ändern von `db_password` das Add-on einmal **neu starten**, damit das
 Passwort auch am bestehenden Datenbank-Benutzer aktualisiert wird.
