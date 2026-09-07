@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.24
+
+- Zweiter Schritt Richtung Offline-Nutzung: Todos, Kategorien und Listen
+  lassen sich jetzt auch **offline bearbeiten** (erstellen, umbenennen,
+  verschieben, erledigt markieren, löschen). Änderungen werden lokal
+  gespeichert und automatisch synchronisiert, sobald wieder eine
+  Verbindung besteht (Hinweis-Banner zeigt die Anzahl ausstehender
+  Änderungen). Konfliktstrategie bewusst einfach: Bei zeitgleichen
+  Änderungen auf mehreren Geräten gewinnt die zuletzt synchronisierte;
+  wurde ein Eintrag zwischenzeitlich auf einem anderen Gerät gelöscht,
+  wird die betroffene Änderung verworfen und im UI als Hinweis
+  angezeigt, statt die restliche Synchronisierung zu blockieren.
+
 ## 1.0.23
 
 - Erster Schritt Richtung Offline-Nutzung (nur Lesen): Zuletzt geladene
