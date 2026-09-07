@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.25
+
+- **Sicherheitsfix, ggf. Handeln erforderlich**: `db_password` und
+  `jwt_secret` hatten bisher einen funktionierenden Default
+  ("change-me" bzw. "change-me-change-me-change-me-change-me"), mit
+  dem das Add-on ohne eigene Konfiguration anstandslos startete. Da
+  dieser Wert öffentlich im Repo einsehbar ist, ließe sich damit bei
+  unveränderter Konfiguration jedes Login-Token fälschen. Beide
+  Optionen sind jetzt standardmäßig leer; das Add-on verweigert den
+  Start mit einer klaren Fehlermeldung im Log, falls `db_password`
+  fehlt oder `jwt_secret` fehlt/kürzer als 32 Zeichen ist – auch wenn
+  noch der alte Default-Wert gesetzt ist. **Wer die Konfiguration
+  bisher nicht angepasst hat, muss vor dem Update auf diese Version
+  unter Einstellungen → Add-ons → Todo-App → Konfiguration ein eigenes
+  `db_password` und `jwt_secret` (mind. 32 zufällige Zeichen) setzen**,
+  sonst startet das Add-on nach dem Update nicht mehr. Alle
+  eingeloggten Nutzer müssen sich danach neu anmelden.
+
 ## 1.0.24
 
 - Zweiter Schritt Richtung Offline-Nutzung: Todos, Kategorien und Listen
